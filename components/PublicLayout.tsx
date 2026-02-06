@@ -11,17 +11,16 @@ const PublicLayout: React.FC = () => {
   const profile = useQuery(api.profile.getProfile);
 
   const navItems = [
-    { name: 'Overview', path: '/' },
-    { name: 'About & CV', path: '/about' },
-    { name: 'Books', path: '/books' },
-    { name: 'Lectures', path: '/media' },
-    { name: 'Research', path: '/research' },
-    { name: 'Contact', path: '/contact' },
+    { name: 'Главная', path: '/' },
+    { name: 'О нас', path: '/about' },
+    { name: 'Книги', path: '/books' },
+    { name: 'Лекции', path: '/media' },
+    { name: 'Исследования', path: '/research' },
+    { name: 'Контакты', path: '/contact' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
-  const profileName = profile?.name || 'Academic Portfolio';
   const profileTitle = profile?.title || '';
   const profileUniversity = profile?.university || '';
 
@@ -46,7 +45,7 @@ const PublicLayout: React.FC = () => {
 
           {/* Mobile Nav Toggle */}
           <div className="md:hidden flex w-full justify-between items-center">
-             <Link to="/" className="text-sm font-serif font-bold italic text-black">{profileName}</Link>
+             <Link to="/" className="text-sm font-serif font-bold italic text-black">Аязбековы</Link>
              <button
                onClick={() => setIsMenuOpen(!isMenuOpen)}
                className="flex items-center space-x-2 text-[11px] uppercase tracking-[0.2em] font-bold text-black"
@@ -77,32 +76,43 @@ const PublicLayout: React.FC = () => {
 
       {/* Hero Header Section */}
       <header className="relative w-full">
-        {/* Cover Image - Improved Contrast */}
+        {/* Cover Image */}
         <div className="w-full h-56 md:h-72 overflow-hidden relative bg-gray-900">
           <img
             src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=1600"
             alt="Cover"
             className="w-full h-full object-cover grayscale opacity-60"
           />
-          {/* Multi-layered gradient for better contrast and fade */}
           <div className="absolute inset-0 bg-black/40"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fbfaf8]"></div>
         </div>
 
-        {/* Profile Identity */}
+        {/* Dual Profile Identity */}
         <div className="max-w-4xl mx-auto px-6 md:px-0 -mt-24 md:-mt-32 relative z-10 flex flex-col items-center">
-          {/* Profile Photo */}
-          <div className="mb-6 group">
-            <img
-              src="https://picsum.photos/seed/academic/400/400"
-              alt={profileName}
-              className="w-36 h-36 md:w-48 md:h-48 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl border-[6px] border-[#fbfaf8] bg-white"
-            />
+          {/* Two Profile Photos */}
+          <div className="flex items-end justify-center gap-4 md:gap-6 mb-6">
+            <div className="group">
+              <img
+                src="https://picsum.photos/seed/professor1/400/400"
+                alt="Аязбеков Скандарбек"
+                className="w-28 h-28 md:w-40 md:h-40 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl border-[5px] border-[#fbfaf8] bg-white"
+              />
+            </div>
+            <div className="group">
+              <img
+                src="https://picsum.photos/seed/professor2/400/400"
+                alt="Аязбекова Сабина"
+                className="w-28 h-28 md:w-40 md:h-40 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl border-[5px] border-[#fbfaf8] bg-white"
+              />
+            </div>
           </div>
 
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-serif font-bold text-black tracking-tight mb-3">
-              {profileName}
+            <h1 className="text-3xl md:text-5xl font-serif font-bold text-black tracking-tight mb-1">
+              Аязбеков Скандарбек
+            </h1>
+            <h1 className="text-3xl md:text-5xl font-serif font-bold text-black tracking-tight mb-3">
+              <span className="text-gray-400 text-2xl md:text-3xl">&amp;</span> Аязбекова Сабина
             </h1>
             <p className="text-sm text-black font-bold uppercase tracking-[0.3em]">
               {profileTitle}
@@ -118,10 +128,10 @@ const PublicLayout: React.FC = () => {
 
       {/* Footer */}
       <footer className="max-w-4xl mx-auto px-6 py-16 border-t border-gray-300 text-center text-[11px] text-black uppercase tracking-[0.15em] font-bold">
-        <p>© {new Date().getFullYear()} {profileName} — {profileUniversity}</p>
+        <p>&copy; {new Date().getFullYear()} Аязбеков Скандарбек &amp; Аязбекова Сабина — {profileUniversity}</p>
         <div className="mt-6 opacity-60 hover:opacity-100 transition-opacity flex justify-center space-x-8">
-          <Link to="/admin" className="hover:underline">Internal CMS</Link>
-          <a href="#" className="hover:underline">Privacy Policy</a>
+          <Link to="/admin" className="hover:underline">Панель управления</Link>
+          <a href="#" className="hover:underline">Политика конфиденциальности</a>
         </div>
       </footer>
     </div>

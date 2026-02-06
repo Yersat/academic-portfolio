@@ -10,7 +10,7 @@ const Home: React.FC = () => {
   const books = useQuery(api.books.listPublished);
 
   if (profile === undefined || books === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
 
   const featuredBooks = (books || []).slice(0, 2);
@@ -28,12 +28,12 @@ const Home: React.FC = () => {
               {profile.extendedBio}
             </p>
             <p>
-              My current research at {profile.university} focuses on the formal constraints of human syntax. I seek to bridge the gap between abstract mathematical models of grammar and the biological reality of neuro-linguistic processing.
+              Наша текущая научная деятельность в {profile.university} сосредоточена на исследованиях в области культурологии, философии и искусствоведения. Мы стремимся объединить теоретические подходы с практическим анализом культурных процессов.
             </p>
           </div>
 
           <div className="pt-12 border-t border-gray-200">
-             <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-500 mb-8">Selected Interests</h3>
+             <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-500 mb-8">Научные интересы</h3>
              <div className="flex flex-wrap gap-x-12 gap-y-6">
               {profile.researchInterests.map(interest => (
                 <span key={interest} className="text-[11px] uppercase tracking-[0.15em] font-bold text-gray-700">
@@ -48,9 +48,9 @@ const Home: React.FC = () => {
       {/* Featured Books Preview */}
       <section className="space-y-12 pt-12 border-t border-gray-200">
         <div className="flex justify-between items-end">
-          <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-500">Selected Publications</h3>
+          <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-500">Избранные публикации</h3>
           <Link to="/books" className="text-[10px] uppercase tracking-[0.2em] font-bold text-black border-b border-black pb-1 hover:text-gray-600 hover:border-gray-400 transition-all">
-            View All Books
+            Все книги
           </Link>
         </div>
 
@@ -82,12 +82,12 @@ const Home: React.FC = () => {
       {/* Quick Navigation to other sections */}
       <section className="pt-12 border-t border-gray-200 grid grid-cols-2 gap-8">
         <Link to="/media" className="group p-6 bg-white border border-gray-100 hover:border-black transition-all">
-          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Lectures</h4>
-          <p className="text-sm font-serif italic text-black">Recorded conference talks and public appearances.</p>
+          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Лекции</h4>
+          <p className="text-sm font-serif italic text-black">Записи конференций, докладов и публичных выступлений.</p>
         </Link>
         <Link to="/research" className="group p-6 bg-white border border-gray-100 hover:border-black transition-all">
-          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Articles</h4>
-          <p className="text-sm font-serif italic text-black">Peer-reviewed research and working papers.</p>
+          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Статьи</h4>
+          <p className="text-sm font-serif italic text-black">Рецензируемые научные статьи и рабочие материалы.</p>
         </Link>
       </section>
     </div>

@@ -11,21 +11,21 @@ const AdminMedia: React.FC = () => {
   const sessionToken = localStorage.getItem('admin_session_token') || '';
 
   const handleDelete = async (id: Id<"mediaItems">) => {
-    if (window.confirm('Are you sure?')) {
+    if (window.confirm('Вы уверены, что хотите удалить этот элемент?')) {
       await deleteMedia({ sessionToken, id });
     }
   };
 
   if (media === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-slate-400 text-sm font-medium">Archive of recorded lectures and media appearances</h3>
+        <h3 className="text-slate-400 text-sm font-medium">Архив записей лекций и медиа-выступлений</h3>
         <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-all shadow-lg shadow-blue-900/10">
-          <Plus size={18} /> Add Media Item
+          <Plus size={18} /> Добавить медиа
         </button>
       </div>
 
@@ -50,7 +50,7 @@ const AdminMedia: React.FC = () => {
               <div className="space-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">{item.type}</span>
                 <h4 className="font-bold text-slate-900 leading-tight">{item.title}</h4>
-                <p className="text-xs text-slate-400">{new Date(item.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric'})}</p>
+                <p className="text-xs text-slate-400">{new Date(item.date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric'})}</p>
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-gray-50">
