@@ -11,29 +11,37 @@ const AdminMedia: React.FC = () => {
   const sessionToken = localStorage.getItem('admin_session_token') || '';
 
   const handleDelete = async (id: Id<"mediaItems">) => {
-    if (window.confirm('Are you sure?')) {
+    if (window.confirm('Вы уверены, что хотите удалить этот элемент?')) {
       await deleteMedia({ sessionToken, id });
     }
   };
 
   if (media === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-slate-400 text-sm font-medium">Archive of recorded lectures and media appearances</h3>
+        <h3 className="text-slate-400 text-sm font-medium">Архив записей лекций и медиа-выступлений</h3>
         <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-all shadow-lg shadow-blue-900/10">
-          <Plus size={18} /> Add Media Item
+          <Plus size={18} /> Добавить запись
         </button>
       </div>
+
+      {(media || []).length === 0 && (
+        <div className="text-center py-20 text-gray-400">
+          <p>Пока нет медиа-записей.</p>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
         {(media || []).map((item) => (
           <div key={item._id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden group">
             <div className="aspect-video bg-slate-100 relative">
-               <img src={`https://picsum.photos/seed/${item._id}/400/225`} className="w-full h-full object-cover" alt="" />
+               <div className="w-full h-full bg-slate-200 flex items-center justify-center">
+                 <Video size={32} className="text-slate-400" />
+               </div>
                <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                  <button className="bg-white p-3 rounded-full text-slate-900 hover:scale-110 transition-transform">
                    <Video size={20} />
@@ -50,7 +58,7 @@ const AdminMedia: React.FC = () => {
               <div className="space-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">{item.type}</span>
                 <h4 className="font-bold text-slate-900 leading-tight">{item.title}</h4>
-                <p className="text-xs text-slate-400">{new Date(item.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric'})}</p>
+                <p className="text-xs text-slate-400">{new Date(item.date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric'})}</p>
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-gray-50">

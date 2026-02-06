@@ -42,6 +42,8 @@ export interface ResearchPaper {
 }
 
 export interface Profile {
+  _id: string;
+  slug: string;
   name: string;
   title: string;
   bio: string;
@@ -51,4 +53,5 @@ export interface Profile {
   email: string;
   location: string;
   cvUrl: string;
+  photoUrl?: string;
 }

@@ -8,19 +8,22 @@ const Media: React.FC = () => {
   const media = useQuery(api.profile.listMedia);
 
   if (media === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
 
   return (
     <div className="space-y-20 animate-fade-in max-w-4xl mx-auto">
       <header className="space-y-6 text-center">
-        <h1 className="text-4xl font-serif font-bold italic text-black">Lectures & Media</h1>
+        <h1 className="text-4xl font-serif font-bold italic text-black">Лекции и медиа</h1>
         <p className="text-lg text-gray-700 max-w-xl mx-auto font-normal leading-relaxed">
-          Recordings of conference talks, keynote presentations, and interviews.
+          Записи конференций, докладов и интервью.
         </p>
       </header>
 
       <div className="space-y-24">
+        {(media || []).length === 0 && (
+          <p className="text-center text-gray-400">Пока нет записей.</p>
+        )}
         {(media || []).map(item => (
           <div key={item._id} className="space-y-8 pb-16 border-b border-gray-200 last:border-0">
             <div className="space-y-4">
@@ -33,7 +36,7 @@ const Media: React.FC = () => {
                 {item.title}
               </h3>
               <p className="text-base text-gray-700 font-normal leading-relaxed max-w-2xl italic">
-                "{item.description}"
+                &laquo;{item.description}&raquo;
               </p>
             </div>
 
@@ -52,9 +55,6 @@ const Media: React.FC = () => {
             )}
 
             <div className="flex items-center gap-6">
-               <button className="flex items-center text-xs font-bold uppercase tracking-widest text-black border-b border-black pb-1">
-                 Full Transcript
-               </button>
                {item.videoUrl && (
                  <a
                   href={`https://youtube.com/watch?v=${item.videoUrl}`}
@@ -62,7 +62,7 @@ const Media: React.FC = () => {
                   rel="noopener noreferrer"
                   className="flex items-center text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-black transition-colors"
                  >
-                   View on YouTube <ExternalLink size={12} className="ml-2" />
+                   Смотреть на YouTube <ExternalLink size={12} className="ml-2" />
                  </a>
                )}
             </div>

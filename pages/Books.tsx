@@ -9,7 +9,7 @@ const Books: React.FC = () => {
   const books = useQuery(api.books.listPublished);
 
   if (books === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
 
   const formatPrice = (price: number, currency: string) => {

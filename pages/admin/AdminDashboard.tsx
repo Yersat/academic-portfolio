@@ -12,20 +12,20 @@ const AdminDashboard: React.FC = () => {
   const orders = useQuery(api.orders.listOrders);
 
   const stats = [
-    { label: 'Books', value: books?.length ?? 0, icon: Book, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Media Items', value: media?.length ?? 0, icon: Video, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Research Papers', value: research?.length ?? 0, icon: FileText, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Orders', value: orders?.length ?? 0, icon: Eye, color: 'text-slate-600', bg: 'bg-slate-50' },
+    { label: 'Книги', value: books?.length ?? 0, icon: Book, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Медиа', value: media?.length ?? 0, icon: Video, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Публикации', value: research?.length ?? 0, icon: FileText, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: 'Заказы', value: orders?.length ?? 0, icon: Eye, color: 'text-slate-600', bg: 'bg-slate-50' },
   ];
 
   const chartData = [
-    { name: 'Mon', visits: 45 },
-    { name: 'Tue', visits: 52 },
-    { name: 'Wed', visits: 38 },
-    { name: 'Thu', visits: 65 },
-    { name: 'Fri', visits: 48 },
-    { name: 'Sat', visits: 30 },
-    { name: 'Sun', visits: 25 },
+    { name: 'Пн', visits: 45 },
+    { name: 'Вт', visits: 52 },
+    { name: 'Ср', visits: 38 },
+    { name: 'Чт', visits: 65 },
+    { name: 'Пт', visits: 48 },
+    { name: 'Сб', visits: 30 },
+    { name: 'Вс', visits: 25 },
   ];
 
   return (
@@ -53,11 +53,11 @@ const AdminDashboard: React.FC = () => {
         <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Traffic Overview</h3>
-              <p className="text-sm text-slate-400">Weekly site engagement metrics.</p>
+              <h3 className="text-lg font-bold text-slate-900">Обзор посещаемости</h3>
+              <p className="text-sm text-slate-400">Еженедельная статистика.</p>
             </div>
             <div className="flex items-center gap-2 text-xs font-bold text-slate-400 border border-slate-100 rounded-md px-3 py-1">
-              <Calendar size={14} /> Last 7 Days
+              <Calendar size={14} /> Последние 7 дней
             </div>
           </div>
           <div className="h-64">
@@ -82,7 +82,7 @@ const AdminDashboard: React.FC = () => {
 
         {/* Recent Orders */}
         <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm space-y-6">
-          <h3 className="text-lg font-bold text-slate-900">Recent Orders</h3>
+          <h3 className="text-lg font-bold text-slate-900">Последние заказы</h3>
           <div className="space-y-6">
             {(orders || []).slice(0, 3).map((order) => (
               <div key={order._id} className="flex gap-4 items-start">
@@ -91,19 +91,19 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-700">
-                    {order.book?.title || 'Unknown book'} - {order.status}
+                    {order.book?.title || 'Неизвестная книга'} - {order.status}
                   </p>
                   <p className="text-xs text-slate-400">{order.email}</p>
                 </div>
               </div>
             ))}
             {(!orders || orders.length === 0) && (
-              <p className="text-sm text-slate-400">No orders yet</p>
+              <p className="text-sm text-slate-400">Пока нет заказов</p>
             )}
           </div>
           <div className="pt-6 border-t border-slate-50">
              <button className="w-full flex items-center justify-between text-sm font-bold text-blue-600 group">
-               View All Orders <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+               Все заказы <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
              </button>
           </div>
         </div>

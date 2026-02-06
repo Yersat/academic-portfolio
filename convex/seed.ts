@@ -11,104 +11,206 @@ export const seedAll = mutation({
       return { message: "Data already exists, skipping seed" };
     }
 
-    // Seed profile
+    // Seed profiles
     await ctx.db.insert("profile", {
-      name: "Dr. Elena Vance",
-      title: "Professor of Theoretical Linguistics",
-      bio: "Elena Vance is a researcher and educator focused on the intersection of cognitive syntax and computational semantic models. She currently leads the Language & Logic Lab.",
+      slug: "sabina",
+      name: "Аязбекова Сабина Шариповна",
+      title: "Доктор философских наук, кандидат искусствоведения, профессор",
+      bio: "Аязбекова Сабина Шариповна — доктор философских наук, кандидат искусствоведения, профессор, академик Казахстанской национальной академии искусств, академик Международной академии наук (Великобритания), академик Российской академии естествознания.",
       extendedBio:
-        "With over two decades of research, Dr. Vance has pioneered several frameworks in minimalist syntax. Her work often bridges the gap between traditional philology and modern neural linguistics. Previously, she held chairs at Oxford and Stanford.",
+        "С 2009 года работает в Казахстанском филиале МГУ имени М.В. Ломоносова в качестве профессора. Специализируется в области философии, культурологии и искусствоведения. Основные направления исследований — евразийские цивилизации и культурное наследие Великой Степи. Публикуется в международных изданиях, индексируемых в Scopus и Web of Science.",
       researchInterests: [
-        "Minimalist Syntax",
-        "Formal Semantics",
-        "Cognitive Neuroscience",
-        "Historical Linguistics",
+        "Философия",
+        "Культурология",
+        "Искусствоведение",
+        "Евразийские цивилизации",
       ],
-      university: "State University of Research",
-      email: "e.vance@university.edu",
-      location: "Building B, Room 402",
+      university: "МГУ имени М.В. Ломоносова (Казахстанский филиал)",
+      email: "ayazbekovas@gmail.com",
+      location: "г. Астана, Казахстан",
+      cvUrl: "#",
+    });
+
+    await ctx.db.insert("profile", {
+      slug: "skandarbek",
+      name: "Аязбеков Скандарбек Ахметович",
+      title: "Профессор",
+      bio: "Аязбеков Скандарбек Ахметович — профессор, исследователь цивилизаций Великой Степи и Ботайской культуры.",
+      extendedBio:
+        "Автор ряда монографий, посвящённых цивилизациям Великой Степи, Ботайской культуре и её вкладу в мировую историю. Соавтор исследований, раскрывающих роль Ботайской культуры как колыбели одомашнивания лошади и генератора цивилизационных процессов.",
+      researchInterests: [
+        "Цивилизации Великой Степи",
+        "Ботайская культура",
+        "Философия истории",
+        "Археология",
+      ],
+      university: "МГУ имени М.В. Ломоносова (Казахстанский филиал)",
+      email: "biligbaspa@mail.ru",
+      location: "г. Астана, Казахстан",
       cvUrl: "#",
     });
 
     // Seed books
+    // Book 1: Мир музыки Газизы Жубановой
     await ctx.db.insert("books", {
-      title: "The Architecture of Syntax",
+      title: "Мир музыки Газизы Жубановой",
+      year: "2019",
+      publisher: "Баспа-АС",
+      isbn: "",
+      coverImage: "/covers/book-cover1.png",
+      description:
+        "Монография посвящена осмыслению культурного взаимодействия Европы и Азии, парадигме Запад-Восток в контексте музыкальных традиций и этнической самоидентификации.",
+      abstract:
+        "В монографии рассматриваются вопросы бикультурного творчества Газизы Жубановой, анализируется музыкальное воспитание, музыкальный интеллект и функционирование этнических традиций в академической музыке. Издание представляет интерес для музыковедов, культурологов и специалистов в области межкультурной коммуникации.",
+      toc: [
+        "Культурное взаимодействие Европы и Азии",
+        "Парадигма Запад-Восток",
+        "Музыкальные традиции и этническая самоидентификация",
+        "Бикультурное творчество Г. Жубановой",
+      ],
+      status: "published",
+      pdfPrice: 5000,
+      pdfCurrency: "KZT",
+      isPublished: true,
+    });
+
+    // Book 2: Коркут-Ата и философия музыки казахов
+    await ctx.db.insert("books", {
+      title: "Коркут-Ата и философия музыки казахов",
       year: "2021",
-      publisher: "Oxford University Press",
-      isbn: "978-0198812345",
-      coverImage: "https://picsum.photos/seed/book1/400/600",
+      publisher: "Bilig",
+      isbn: "",
+      coverImage: "/covers/book-cover2.png",
       description:
-        "A comprehensive look at minimalist program developments.",
+        "Монография раскрывает аксиологический и культуротворческий подход к осмыслению образа Коркут-Ата и философии казахской музыки.",
       abstract:
-        "This monograph explores the evolution of the minimalist program over the last decade, proposing a new model for phase-theoretic derivations that accounts for cross-linguistic variations in word order.",
+        "В монографии анализируются космоцентрическое и социоцентрическое мировоззрение, мирообразующее и миромоделирующее значение Коркут-Ата. Издание адресовано специалистам в области философии, теории культуры, истории, востоковедения и музыкознания.",
       toc: [
-        "Preliminaries: The Internal System of Meaning",
-        "Recursive Structures and Functional Heads",
-        "A New Model for Phase Inheritance",
-        "Empirical Evidence from Romance Dialects",
-        "Concluding Remarks on Biolinguistics",
+        "Аксиологический подход к образу Коркут-Ата",
+        "Космоцентрическое мировоззрение",
+        "Социоцентрическое мировоззрение",
+        "Мирообразующее значение Коркут-Ата",
       ],
       status: "published",
-      litresUrl: "https://www.litres.ru/",
-      pdfPrice: 2990,
+      pdfPrice: 5000,
       pdfCurrency: "KZT",
       isPublished: true,
     });
 
+    // Book 3: Культура и искусство Великой Степи
     await ctx.db.insert("books", {
-      title: "Meaning in Motion",
-      year: "2018",
-      publisher: "MIT Press",
-      isbn: "978-0262534567",
-      coverImage: "https://picsum.photos/seed/book2/400/600",
-      description: "Dynamic semantics and the evolution of language.",
+      title: "Культура и искусство Великой Степи",
+      year: "2023",
+      publisher: "Bilig",
+      isbn: "",
+      coverImage: "/covers/book-cover3.png",
+      description:
+        "Монография является продолжением исследования «Цивилизации Великой Степи» и посвящена генетическим связям кочевых, тенгрианских и скифо-сакских культур.",
       abstract:
-        "Meaning in Motion challenges static views of semantics, arguing for a fluid interpretative process that mirrors biological cognitive growth.",
+        "В издании показаны генетические связи культур номадов, тенгрианства и скифо-сакского мира. Монография рекомендована для искусствоведов, философов, историков и культурологов.",
       toc: [
-        "Introduction to Dynamic Semantics",
-        "Historical Perspectives",
-        "Cognitive Mechanisms",
-        "Neurolinguistic Evidence",
-        "Modern Applications and Future Directions",
+        "Генетические связи номадических культур",
+        "Тенгрианские традиции",
+        "Скифо-сакский мир",
+        "Культурное наследие Великой Степи",
       ],
       status: "published",
-      litresUrl: "https://www.litres.ru/",
-      pdfPrice: 3500,
+      pdfPrice: 5000,
       pdfCurrency: "KZT",
       isPublished: true,
     });
 
-    // Seed media
-    await ctx.db.insert("mediaItems", {
-      title: "Annual Keynote: The Future of Formalism",
-      date: "2023-11-15",
-      type: "Lecture",
-      description: "Delivered at the International Linguistics Conference.",
-      videoUrl: "dQw4w9WgXcQ",
-      tags: ["Formalism", "Keynote", "2023"],
-      status: "published",
-    });
-
-    await ctx.db.insert("mediaItems", {
-      title: "Interview with Lexical Radio",
-      date: "2022-05-10",
-      type: "Interview",
-      description:
-        "A deep dive into cognitive syntax for a general audience.",
-      videoUrl: "dQw4w9WgXcQ",
-      tags: ["Interview", "Popular Science"],
-      status: "published",
-    });
-
-    // Seed research
-    await ctx.db.insert("researchPapers", {
-      title: "On the Nature of Phase Boundaries",
+    // Book 4: Man and Society in Botai Culture (English)
+    await ctx.db.insert("books", {
+      title: "Man and Society in Botai Culture: Civilizational Discourse",
       year: "2023",
-      journal: "Linguistic Inquiry",
-      authors: "Elena Vance, Marcus Aurelius",
+      publisher: "Bilig",
+      isbn: "",
+      coverImage: "/covers/book-cover4.png",
+      description:
+        "A monograph exploring the Botai culture as the earliest center of horse domestication and its role in generating civilizational processes.",
       abstract:
-        "This paper provides empirical evidence for the rigidity of phase boundaries in Germanic languages.",
+        "The Botai culture, discovered by archaeologist V.F. Smirnov, is world-renowned as the earliest horse domestication center. This study employs interdisciplinary methodology spanning civiliziology, philosophy, archaeology, history, DNA genealogy, linguistics, cultural studies, and ethnology. Key findings include Botai as a source of Kazakh statehood, a generator of multiple civilizations, and a site containing the earliest writing forms.",
+      toc: [
+        "Botai Culture: Discovery and Significance",
+        "Interdisciplinary Methodology",
+        "Horse Domestication and Civilization",
+        "Botai as Generator of Civilizations",
+      ],
       status: "published",
+      pdfPrice: 5000,
+      pdfCurrency: "KZT",
+      isPublished: true,
+    });
+
+    // Book 5: Ботай мәдениетіндегі адам және қоғам (Kazakh)
+    await ctx.db.insert("books", {
+      title: "Ботай мәдениетіндегі адам және қоғам: өркениеттік дискурс",
+      year: "2023",
+      publisher: "Bilig",
+      isbn: "",
+      coverImage: "/covers/book-cover5.png",
+      description:
+        "Ботай мәдениеті — жылқыны алғаш қолға үйреткен ежелгі орталық. Бұл монографияда өркениеттік контекстте адам мен қоғам мәселелері зерттелген.",
+      abstract:
+        "Монографияда пәнаралық әдіснама қолданылады: өркениеттану, философия, археология, тарих, ДНҚ генеалогиясы, лингвистика, мәдениеттану және этнология. Негізгі тұжырымдар: Ботай — қазақ мемлекеттігінің бастауы, бірнеше өркениеттердің генераторы.",
+      toc: [
+        "Ботай мәдениеті: ашылуы мен маңызы",
+        "Пәнаралық әдіснама",
+        "Жылқыны қолға үйрету және өркениет",
+        "Ботай — өркениеттер генераторы",
+      ],
+      status: "published",
+      pdfPrice: 5000,
+      pdfCurrency: "KZT",
+      isPublished: true,
+    });
+
+    // Book 6: Человек и общество в Ботайской культуре (Russian)
+    await ctx.db.insert("books", {
+      title: "Человек и общество в Ботайской культуре: цивилизационный дискурс",
+      year: "2023",
+      publisher: "Bilig",
+      isbn: "",
+      coverImage: "/covers/book-cover6.png",
+      description:
+        "Монография посвящена Ботайской культуре — древнейшему центру одомашнивания лошади — и её роли как генератора цивилизационных процессов.",
+      abstract:
+        "Ботайская культура, открытая археологом В.Ф. Зайбертом, всемирно известна как древнейший центр доместикации лошади. В монографии применяется междисциплинарная методология: цивилизиология, философия, археология, история, ДНК-генеалогия, лингвистика, культурология и этнология. Ключевые выводы: Ботай как исток казахской государственности, генератор множества цивилизаций, носитель древнейших форм письменности.",
+      toc: [
+        "Ботайская культура: открытие и значение",
+        "Междисциплинарная методология",
+        "Доместикация лошади и цивилизация",
+        "Ботай как генератор цивилизаций",
+      ],
+      status: "published",
+      pdfPrice: 5000,
+      pdfCurrency: "KZT",
+      isPublished: true,
+    });
+
+    // Book 7: Цивилизации Великой Степи
+    await ctx.db.insert("books", {
+      title: "Цивилизации Великой Степи",
+      year: "2022",
+      publisher: "Bilig",
+      isbn: "",
+      coverImage: "/covers/book-cover7.png",
+      description:
+        "Монография рассматривает мировые и глобальные цивилизации (синхронные и диахронные), локальные цивилизации (эндогенные и экзогенные) в контексте Великой Степи.",
+      abstract:
+        "В монографии анализируются номадические и оседлые цивилизации, тенгрианство и скифо-сакские цивилизации. Предлагается классификация цивилизационной системы Великой Степи. Издание адресовано историкам, философам, культурологам и всем интересующимся историей Центральной Азии.",
+      toc: [
+        "Мировые и глобальные цивилизации",
+        "Локальные цивилизации",
+        "Номадические и оседлые цивилизации",
+        "Тенгрианство и скифо-сакский мир",
+        "Классификация цивилизаций Великой Степи",
+      ],
+      status: "published",
+      pdfPrice: 5000,
+      pdfCurrency: "KZT",
+      isPublished: true,
     });
 
     // Initialize invoice counter

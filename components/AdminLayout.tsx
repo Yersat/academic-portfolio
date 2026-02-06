@@ -18,10 +18,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'Books', path: '/admin/books', icon: Book },
-    { name: 'Media', path: '/admin/media', icon: Video },
-    { name: 'Site Content', path: '/admin/pages', icon: FileEdit },
+    { name: 'Панель', path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Книги', path: '/admin/books', icon: Book },
+    { name: 'Медиа', path: '/admin/media', icon: Video },
+    { name: 'Контент сайта', path: '/admin/pages', icon: FileEdit },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -32,10 +32,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
       <aside className="w-64 bg-slate-900 text-white flex flex-col fixed inset-y-0 z-50">
         <div className="p-6 border-b border-slate-800">
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <Settings size={20} className="text-blue-400" /> Academic CMS
+            <Settings size={20} className="text-blue-400" /> Bilig CMS
           </h1>
         </div>
-        
+
         <nav className="flex-1 p-4 space-y-2 mt-4">
           {navItems.map((item) => (
             <Link
@@ -57,16 +57,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
                <User size={16} />
              </div>
              <div className="text-xs">
-               <p className="font-bold">Prof. Vance</p>
-               <p className="text-slate-500">Administrator</p>
+               <p className="font-bold">Администратор</p>
+               <p className="text-slate-500">Bilig</p>
              </div>
            </div>
-           <button 
+           <button
              onClick={handleLogout}
              className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-900/10 rounded-md transition-all"
            >
              <LogOut size={18} />
-             <span className="font-medium">Logout</span>
+             <span className="font-medium">Выход</span>
            </button>
         </div>
       </aside>
@@ -75,11 +75,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
       <main className="ml-64 flex-1 min-h-screen flex flex-col">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-40">
            <h2 className="font-bold text-slate-700">
-             {navItems.find(n => isActive(n.path))?.name || 'Admin'}
+             {navItems.find(n => isActive(n.path))?.name || 'Админ'}
            </h2>
            <div className="flex items-center gap-4">
              <Link to="/" className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-blue-600 border border-slate-200 px-3 py-1.5 rounded-sm transition-all">
-               View Live Site
+               Перейти на сайт
              </Link>
            </div>
         </header>

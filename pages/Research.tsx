@@ -8,30 +8,33 @@ const Research: React.FC = () => {
   const research = useQuery(api.profile.listResearch);
 
   if (research === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
 
   return (
     <div className="space-y-20 animate-fade-in max-w-3xl mx-auto">
       <header className="space-y-6 text-center">
-        <h1 className="text-4xl font-serif font-bold italic text-black">Research & Articles</h1>
+        <h1 className="text-4xl font-serif font-bold italic text-black">Публикации и статьи</h1>
         <p className="text-lg text-gray-700 max-w-xl mx-auto font-normal leading-relaxed">
-          A selection of peer-reviewed articles and working papers focusing on structural linguistics.
+          Рецензируемые статьи и научные работы.
         </p>
       </header>
 
       <div className="space-y-16">
+        {(research || []).length === 0 && (
+          <p className="text-center text-gray-400">Пока нет публикаций.</p>
+        )}
         {(research || []).map(paper => (
           <article key={paper._id} className="group space-y-4">
             <div className="flex items-start justify-between gap-6">
               <div className="space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600">
-                  {paper.year} • {paper.journal}
+                  {paper.year} {paper.journal ? `\u2022 ${paper.journal}` : ''}
                 </span>
                 <h2 className="text-2xl font-serif font-bold text-black leading-tight group-hover:underline underline-offset-4 decoration-1">
                   {paper.title}
                 </h2>
-                <p className="text-xs text-gray-600 font-bold italic">with {paper.authors}</p>
+                <p className="text-xs text-gray-600 font-bold italic">{paper.authors}</p>
               </div>
             </div>
 
@@ -40,12 +43,11 @@ const Research: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-8 pt-2">
-              <button className="flex items-center text-xs font-bold uppercase tracking-widest text-black hover:text-gray-600 transition-colors">
-                <FileText size={14} className="mr-2" /> Download PDF
-              </button>
-              <button className="text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-black transition-colors">
-                Journal Link
-              </button>
+              {paper.pdfUrl && (
+                <a href={paper.pdfUrl} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs font-bold uppercase tracking-widest text-black hover:text-gray-600 transition-colors">
+                  <FileText size={14} className="mr-2" /> Скачать PDF
+                </a>
+              )}
             </div>
 
             <div className="pt-8 border-b border-gray-200 w-24"></div>

@@ -150,7 +150,7 @@ const AdminBooks: React.FC = () => {
   };
 
   if (books === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
 
   return (

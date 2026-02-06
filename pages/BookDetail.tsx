@@ -13,7 +13,7 @@ const BookDetail: React.FC = () => {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (book === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
   if (!book) return <Navigate to="/books" />;
 

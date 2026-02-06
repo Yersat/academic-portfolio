@@ -59,6 +59,7 @@ export default defineSchema({
   }).index("by_token", ["token"]),
 
   profile: defineTable({
+    slug: v.string(),
     name: v.string(),
     title: v.string(),
     bio: v.string(),
@@ -68,7 +69,8 @@ export default defineSchema({
     email: v.string(),
     location: v.string(),
     cvUrl: v.string(),
-  }),
+    photoUrl: v.optional(v.string()),
+  }).index("by_slug", ["slug"]),
 
   mediaItems: defineTable({
     title: v.string(),

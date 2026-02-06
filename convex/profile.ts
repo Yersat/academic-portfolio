@@ -10,9 +10,27 @@ export const getProfile = query({
   },
 });
 
+export const getProfiles = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("profile").collect();
+  },
+});
+
+export const getProfileBySlug = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("profile")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .first();
+  },
+});
+
 export const updateProfile = mutation({
   args: {
     sessionToken: v.string(),
+    id: v.id("profile"),
     name: v.optional(v.string()),
     title: v.optional(v.string()),
     bio: v.optional(v.string()),
@@ -22,6 +40,7 @@ export const updateProfile = mutation({
     email: v.optional(v.string()),
     location: v.optional(v.string()),
     cvUrl: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const session = await ctx.db
@@ -32,7 +51,7 @@ export const updateProfile = mutation({
       throw new Error("Unauthorized");
     }
 
-    const { sessionToken, ...updates } = args;
+    const { sessionToken, id, ...updates } = args;
     const cleanUpdates: Record<string, any> = {};
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
@@ -40,9 +59,8 @@ export const updateProfile = mutation({
       }
     }
 
-    const profile = await ctx.db.query("profile").first();
-    if (profile) {
-      await ctx.db.patch(profile._id, cleanUpdates);
+    if (Object.keys(cleanUpdates).length > 0) {
+      await ctx.db.patch(id, cleanUpdates);
     }
   },
 });
