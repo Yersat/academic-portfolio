@@ -45,7 +45,7 @@ const PublicLayout: React.FC = () => {
 
           {/* Mobile Nav Toggle */}
           <div className="md:hidden flex w-full justify-between items-center">
-             <Link to="/" className="text-sm font-serif font-bold italic text-black">Bilig</Link>
+             <Link to="/" className="text-sm font-serif font-bold italic text-black">Аязбековы</Link>
              <button
                onClick={() => setIsMenuOpen(!isMenuOpen)}
                className="flex items-center space-x-2 text-[11px] uppercase tracking-[0.2em] font-bold text-black"
