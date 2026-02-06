@@ -37,7 +37,7 @@ const Books: React.FC = () => {
                   <img
                     src={book.coverImage}
                     alt={book.title}
-                    className="w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700"
+                    className="w-full h-auto transition-all duration-700"
                   />
                 </div>
               </Link>

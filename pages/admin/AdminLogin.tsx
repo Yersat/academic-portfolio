@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import { Lock, ArrowLeft } from 'lucide-react';
+import { Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 interface AdminLoginProps {
   onLogin: (token: string) => void;
@@ -13,6 +13,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const login = useMutation(api.auth.adminLogin);
 
@@ -45,15 +46,25 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-1">
             <label className="text-xs uppercase font-bold tracking-widest text-slate-400">Пароль доступа</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border-slate-200 border-2 rounded-md outline-none focus:border-blue-600 transition-all text-center tracking-[0.5em]"
-              placeholder="••••••••"
-              autoFocus
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 pr-12 bg-slate-50 border-slate-200 border-2 rounded-md outline-none focus:border-blue-600 transition-all text-center tracking-[0.5em]"
+                placeholder="••••••••"
+                autoFocus
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && (
