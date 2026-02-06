@@ -82,7 +82,7 @@ export const seedAll = mutation({
     await ctx.db.insert("mediaItems", {
       title: "Ежегодный доклад: Будущее культурологии",
       date: "2023-11-15",
-      type: "Лекция",
+      type: "Lecture",
       description: "Доклад на Международной конференции по культурологии.",
       videoUrl: "dQw4w9WgXcQ",
       tags: ["Культурология", "Доклад", "2023"],
@@ -92,7 +92,7 @@ export const seedAll = mutation({
     await ctx.db.insert("mediaItems", {
       title: "Интервью для научного радио",
       date: "2022-05-10",
-      type: "Интервью",
+      type: "Interview",
       description:
         "Подробный разговор о философии культуры для широкой аудитории.",
       videoUrl: "dQw4w9WgXcQ",
