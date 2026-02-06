@@ -61,7 +61,7 @@ const Home: React.FC = () => {
                 <img
                   src={book.coverImage}
                   alt={book.title}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
               </div>
