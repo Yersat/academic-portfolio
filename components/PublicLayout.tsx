@@ -1,0 +1,129 @@
+
+import React, { useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+import { Profile } from '../types';
+
+interface PublicLayoutProps {
+  profile: Profile;
+}
+
+const PublicLayout: React.FC<PublicLayoutProps> = ({ profile }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const navItems = [
+    { name: 'Overview', path: '/' },
+    { name: 'About & CV', path: '/about' },
+    { name: 'Books', path: '/books' },
+    { name: 'Lectures', path: '/media' },
+    { name: 'Research', path: '/research' },
+    { name: 'Contact', path: '/contact' },
+  ];
+
+  const isActive = (path: string) => location.pathname === path;
+
+  return (
+    <div className="min-h-screen bg-[#fbfaf8] text-[#000000] selection:bg-gray-300">
+      {/* Absolute Top Navigation */}
+      <nav className="sticky top-0 z-50 bg-[#fbfaf8]/95 backdrop-blur-md border-b border-gray-300 py-4">
+        <div className="max-w-4xl mx-auto px-6 md:px-0 flex justify-center items-center">
+          <div className="hidden md:flex space-x-10">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-[11px] uppercase tracking-[0.2em] font-bold transition-all hover:text-black ${
+                  isActive(item.path) ? 'text-black border-b-2 border-black' : 'text-gray-700'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile Nav Toggle */}
+          <div className="md:hidden flex w-full justify-between items-center">
+             <Link to="/" className="text-sm font-serif font-bold italic text-black">{profile.name}</Link>
+             <button 
+               onClick={() => setIsMenuOpen(!isMenuOpen)}
+               className="flex items-center space-x-2 text-[11px] uppercase tracking-[0.2em] font-bold text-black"
+             >
+               {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+             </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Overlay */}
+        {isMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-[#fbfaf8] border-b border-gray-300 py-6 px-6 space-y-4 text-center animate-fade-in shadow-2xl">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsMenuOpen(false)}
+                className={`block text-[11px] uppercase tracking-[0.2em] font-bold py-2 ${
+                  isActive(item.path) ? 'text-black' : 'text-gray-700'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+        )}
+      </nav>
+
+      {/* Hero Header Section */}
+      <header className="relative w-full">
+        {/* Cover Image - Improved Contrast */}
+        <div className="w-full h-56 md:h-72 overflow-hidden relative bg-gray-900">
+          <img 
+            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=1600" 
+            alt="Cover" 
+            className="w-full h-full object-cover grayscale opacity-60"
+          />
+          {/* Multi-layered gradient for better contrast and fade */}
+          <div className="absolute inset-0 bg-black/40"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fbfaf8]"></div>
+        </div>
+
+        {/* Profile Identity */}
+        <div className="max-w-4xl mx-auto px-6 md:px-0 -mt-24 md:-mt-32 relative z-10 flex flex-col items-center">
+          {/* Profile Photo */}
+          <div className="mb-6 group">
+            <img 
+              src="https://picsum.photos/seed/academic/400/400" 
+              alt={profile.name} 
+              className="w-36 h-36 md:w-48 md:h-48 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl border-[6px] border-[#fbfaf8] bg-white"
+            />
+          </div>
+          
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-serif font-bold text-black tracking-tight mb-3">
+              {profile.name}
+            </h1>
+            <p className="text-sm text-black font-bold uppercase tracking-[0.3em]">
+              {profile.title}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {/* Content */}
+      <main className="max-w-4xl mx-auto px-6 py-12 md:py-20">
+        <Outlet />
+      </main>
+
+      {/* Footer */}
+      <footer className="max-w-4xl mx-auto px-6 py-16 border-t border-gray-300 text-center text-[11px] text-black uppercase tracking-[0.15em] font-bold">
+        <p>© {new Date().getFullYear()} {profile.name} — {profile.university}</p>
+        <div className="mt-6 opacity-60 hover:opacity-100 transition-opacity flex justify-center space-x-8">
+          <Link to="/admin" className="hover:underline">Internal CMS</Link>
+          <a href="#" className="hover:underline">Privacy Policy</a>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default PublicLayout;

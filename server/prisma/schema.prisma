@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id          String   @id @default(cuid())
+  title       String
+  year        String
+  publisher   String
+  isbn        String   @unique
+  coverImage  String
+  description String
+  abstract    String
+  toc         String?  // JSON array stored as string
+  status      String   @default("published") // "published" | "draft"
+  
+  // Purchase options
+  litresUrl   String?  // Litres marketplace URL
+  pdfPrice    Float?   // Price for PDF version
+  pdfCurrency String   @default("KZT") // "KZT" | "RUB"
+  pdfFilePath String?  // Server-side path to PDF file
+  
+  isPublished Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  orders      Order[]
+}
+
+model Order {
+  id                  String   @id @default(cuid())
+  bookId              String
+  book                Book     @relation(fields: [bookId], references: [id])
+  email               String
+  amount              Float
+  currency            String   @default("KZT") // "KZT" | "RUB"
+  status              String   @default("PENDING") // "PENDING" | "PAID" | "FAILED" | "CANCELLED"
+  
+  // Robokassa fields
+  robokassaInvoiceId  Int      @unique // InvId - must be unique numeric
+  robokassaSignature  String?
+  
+  // Download token for secure PDF access
+  downloadToken       String?
+  downloadTokenExpiry DateTime?
+  downloadCount       Int      @default(0)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  events              OrderEvent[]
+}
+
+model OrderEvent {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  eventType String   // "CREATED" | "PAYMENT_INITIATED" | "CALLBACK_RECEIVED" | "PAYMENT_SUCCESS" | "PAYMENT_FAILED" | "EMAIL_SENT" | "DOWNLOAD"
+  details   String?  // JSON string for additional data
+  createdAt DateTime @default(now())
+}
+
+// Counter for generating unique numeric InvId for Robokassa
+model InvoiceCounter {
+  id    String @id @default("invoice_counter")
+  value Int    @default(0)
+}

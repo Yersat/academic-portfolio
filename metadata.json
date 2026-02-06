@@ -1,0 +1,7 @@
+{
+  "name": "Academic Portfolio & CMS",
+  "description": "A high-fidelity academic website for university professors featuring a minimalist research-oriented design, digital library, media archive, and a full CMS admin panel.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

@@ -1,0 +1,108 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Book } from '../types';
+import { ShoppingCart, ArrowRight, FileText } from 'lucide-react';
+
+interface BooksProps {
+  books: Book[];
+}
+
+const Books: React.FC<BooksProps> = ({ books }) => {
+  const publishedBooks = books.filter(b => b.status === 'published');
+
+  const formatPrice = (price: number, currency: string) => {
+    if (currency === 'KZT') {
+      return `${price.toLocaleString('ru-RU')} ₸`;
+    }
+    return `${price.toLocaleString('ru-RU')} ₽`;
+  };
+
+  return (
+    <div className="space-y-24 animate-fade-in max-w-3xl mx-auto">
+      <header className="space-y-6 text-center">
+        <h1 className="text-4xl font-serif font-bold italic text-black">Библиотека</h1>
+        <p className="text-sm text-gray-600 max-w-lg mx-auto font-bold uppercase tracking-[0.2em]">
+          Монографии и научные труды
+        </p>
+      </header>
+
+      <div className="space-y-32">
+        {publishedBooks.map(book => (
+          <div key={book.id} className="group grid md:grid-cols-5 gap-16 items-start">
+            <div className="md:col-span-2">
+              <Link to={`/books/${book.id}`}>
+                <div className="relative overflow-hidden bg-white shadow-md transition-all duration-700 group-hover:shadow-2xl">
+                  <img
+                    src={book.coverImage}
+                    alt={book.title}
+                    className="w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700"
+                  />
+                </div>
+              </Link>
+            </div>
+
+            <div className="md:col-span-3 space-y-6">
+              <div className="space-y-3">
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-600">
+                  {book.publisher} — {book.year}
+                </span>
+                <Link to={`/books/${book.id}`}>
+                  <h2 className="text-3xl font-serif font-bold leading-tight group-hover:text-gray-700 transition-colors text-black">
+                    {book.title}
+                  </h2>
+                </Link>
+              </div>
+
+              <p className="text-base text-gray-700 leading-relaxed font-normal italic">
+                {book.description}
+              </p>
+
+              {/* PDF Price Badge */}
+              {book.pdfPrice && book.pdfPrice > 0 && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-sm text-xs font-bold">
+                  <FileText size={12} />
+                  PDF: {formatPrice(book.pdfPrice, book.pdfCurrency || 'KZT')}
+                </div>
+              )}
+
+              <div className="flex flex-col space-y-4 pt-6">
+                {/* Litres link */}
+                {book.litresUrl && (
+                  <a
+                    href={book.litresUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center text-[10px] font-bold uppercase tracking-[0.25em] text-black hover:text-gray-600 transition-colors border-b border-gray-200 pb-2 w-fit"
+                  >
+                    <ShoppingCart size={12} className="mr-3" /> Купить на Литрес
+                  </a>
+                )}
+
+                {/* Legacy purchase links */}
+                {book.purchaseLinks.map((link, idx) => (
+                  <a
+                    key={idx}
+                    href={link.url}
+                    className="flex items-center text-[10px] font-bold uppercase tracking-[0.25em] text-black hover:text-gray-600 transition-colors border-b border-gray-200 pb-2 w-fit"
+                  >
+                    <ShoppingCart size={12} className="mr-3" /> Купить: {link.label}
+                  </a>
+                ))}
+
+                <Link
+                  to={`/books/${book.id}`}
+                  className="flex items-center text-[10px] font-bold uppercase tracking-[0.25em] text-gray-600 hover:text-black transition-colors pt-2"
+                >
+                  Подробнее <ArrowRight size={12} className="ml-2" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Books;
