@@ -15,18 +15,18 @@ const Contact: React.FC = () => {
   };
 
   if (profile === undefined) {
-    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+    return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
   }
   if (!profile) {
-    return <div className="text-center py-20 text-gray-400">Profile not found</div>;
+    return <div className="text-center py-20 text-gray-400">Профиль не найден</div>;
   }
 
   return (
     <div className="space-y-16">
       <header className="space-y-4">
-        <h1 className="text-5xl font-serif font-bold">Get in Touch</h1>
+        <h1 className="text-5xl font-serif font-bold">Связаться с нами</h1>
         <p className="text-xl text-gray-500 max-w-2xl font-light">
-          For inquiries regarding guest lectures, research collaborations, or media appearances, please reach out via the form below or professional email.
+          По вопросам приглашённых лекций, научного сотрудничества или медиа-выступлений, пожалуйста, заполните форму ниже или напишите на электронную почту.
         </p>
       </header>
 
@@ -38,7 +38,7 @@ const Contact: React.FC = () => {
                 <Mail size={18} />
               </div>
               <div>
-                <h4 className="text-xs uppercase font-bold tracking-widest text-gray-400 mb-1">Email</h4>
+                <h4 className="text-xs uppercase font-bold tracking-widest text-gray-400 mb-1">Электронная почта</h4>
                 <p className="text-lg font-medium text-gray-900">{profile.email}</p>
               </div>
             </div>
@@ -48,7 +48,7 @@ const Contact: React.FC = () => {
                 <Building2 size={18} />
               </div>
               <div>
-                <h4 className="text-xs uppercase font-bold tracking-widest text-gray-400 mb-1">Affiliation</h4>
+                <h4 className="text-xs uppercase font-bold tracking-widest text-gray-400 mb-1">Университет</h4>
                 <p className="text-lg font-medium text-gray-900">{profile.university}</p>
               </div>
             </div>
@@ -58,16 +58,16 @@ const Contact: React.FC = () => {
                 <MapPin size={18} />
               </div>
               <div>
-                <h4 className="text-xs uppercase font-bold tracking-widest text-gray-400 mb-1">Office Location</h4>
+                <h4 className="text-xs uppercase font-bold tracking-widest text-gray-400 mb-1">Местоположение</h4>
                 <p className="text-lg font-medium text-gray-900">{profile.location}</p>
               </div>
             </div>
           </section>
 
           <div className="p-8 bg-blue-50 border border-blue-100 rounded-sm">
-            <h4 className="text-blue-900 font-serif font-bold mb-2 italic">Student Information</h4>
+            <h4 className="text-blue-900 font-serif font-bold mb-2 italic">Информация для студентов</h4>
             <p className="text-sm text-blue-800/80 leading-relaxed font-light">
-              Students seeking thesis supervision should attach their research proposal (2-3 pages) and latest transcript before requesting a formal meeting.
+              Студентам, желающим получить научное руководство, необходимо приложить исследовательское предложение (2–3 страницы) и актуальную выписку из зачётной ведомости перед запросом официальной встречи.
             </p>
           </div>
         </div>
@@ -75,39 +75,39 @@ const Contact: React.FC = () => {
         <div>
           <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 border border-gray-100 shadow-xl rounded-sm">
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Your Name</label>
+              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Ваше имя</label>
               <input
                 required
                 type="text"
                 className="w-full px-4 py-3 bg-gray-50 border-transparent border-b-gray-200 border-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-sm font-medium"
-                placeholder="Jane Doe"
+                placeholder="Иван Иванов"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Academic Email</label>
+              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Электронная почта</label>
               <input
                 required
                 type="email"
                 className="w-full px-4 py-3 bg-gray-50 border-transparent border-b-gray-200 border-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-sm font-medium"
-                placeholder="jane@university.edu"
+                placeholder="ivan@university.edu"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Subject</label>
+              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Тема</label>
               <select className="w-full px-4 py-3 bg-gray-50 border-transparent border-b-gray-200 border-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-sm font-medium appearance-none">
-                <option>General Inquiry</option>
-                <option>Research Collaboration</option>
-                <option>Media/Lecture Request</option>
-                <option>Student Supervision</option>
+                <option>Общий вопрос</option>
+                <option>Научное сотрудничество</option>
+                <option>Запрос на лекцию / медиа</option>
+                <option>Научное руководство</option>
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Message</label>
+              <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Сообщение</label>
               <textarea
                 required
                 rows={5}
                 className="w-full px-4 py-3 bg-gray-50 border-transparent border-b-gray-200 border-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-sm font-medium resize-none"
-                placeholder="How can I help you?"
+                placeholder="Чем мы можем вам помочь?"
               />
             </div>
 
@@ -119,9 +119,9 @@ const Contact: React.FC = () => {
               }`}
             >
               {sent ? (
-                <>Message Sent <Send size={16} className="ml-2" /></>
+                <>Сообщение отправлено <Send size={16} className="ml-2" /></>
               ) : (
-                <>Send Message <Send size={16} className="ml-2" /></>
+                <>Отправить сообщение <Send size={16} className="ml-2" /></>
               )}
             </button>
           </form>

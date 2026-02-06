@@ -13,40 +13,40 @@ export const seedAll = mutation({
 
     // Seed profile
     await ctx.db.insert("profile", {
-      name: "Dr. Elena Vance",
-      title: "Professor of Theoretical Linguistics",
-      bio: "Elena Vance is a researcher and educator focused on the intersection of cognitive syntax and computational semantic models. She currently leads the Language & Logic Lab.",
+      name: "Аязбеков Скандарбек & Аязбекова Сабина",
+      title: "Профессора культурологии и философии",
+      bio: "Аязбеков Скандарбек и Аязбекова Сабина — исследователи и педагоги, работающие на стыке культурологии, философии и искусствоведения. Совместно руководят научным направлением «Культура и цивилизация».",
       extendedBio:
-        "With over two decades of research, Dr. Vance has pioneered several frameworks in minimalist syntax. Her work often bridges the gap between traditional philology and modern neural linguistics. Previously, she held chairs at Oxford and Stanford.",
+        "За более чем два десятилетия научной работы профессора Аязбековы внесли значительный вклад в развитие культурологии и философии в Казахстане и за его пределами. Их исследования охватывают широкий спектр тем — от теории культуры до музыковедения и философии искусства.",
       researchInterests: [
-        "Minimalist Syntax",
-        "Formal Semantics",
-        "Cognitive Neuroscience",
-        "Historical Linguistics",
+        "Культурология",
+        "Философия культуры",
+        "Искусствоведение",
+        "Музыковедение",
       ],
-      university: "State University of Research",
-      email: "e.vance@university.edu",
-      location: "Building B, Room 402",
+      university: "Университет",
+      email: "contact@bilig.kz",
+      location: "Казахстан",
       cvUrl: "#",
     });
 
     // Seed books
     await ctx.db.insert("books", {
-      title: "The Architecture of Syntax",
+      title: "Культура и цивилизация",
       year: "2021",
-      publisher: "Oxford University Press",
+      publisher: "Издательство «Наука»",
       isbn: "978-0198812345",
       coverImage: "https://picsum.photos/seed/book1/400/600",
       description:
-        "A comprehensive look at minimalist program developments.",
+        "Монография, посвящённая теоретическим основам взаимосвязи культуры и цивилизации.",
       abstract:
-        "This monograph explores the evolution of the minimalist program over the last decade, proposing a new model for phase-theoretic derivations that accounts for cross-linguistic variations in word order.",
+        "В данной монографии рассматриваются основные концепции взаимосвязи культуры и цивилизации, предлагается новый методологический подход к анализу культурных процессов в контексте глобализации.",
       toc: [
-        "Preliminaries: The Internal System of Meaning",
-        "Recursive Structures and Functional Heads",
-        "A New Model for Phase Inheritance",
-        "Empirical Evidence from Romance Dialects",
-        "Concluding Remarks on Biolinguistics",
+        "Введение: Культура как система",
+        "Цивилизационные подходы в культурологии",
+        "Методология исследования культурных процессов",
+        "Эмпирический анализ культурных трансформаций",
+        "Заключение и перспективы",
       ],
       status: "published",
       litresUrl: "https://www.litres.ru/",
@@ -56,20 +56,20 @@ export const seedAll = mutation({
     });
 
     await ctx.db.insert("books", {
-      title: "Meaning in Motion",
+      title: "Философия музыки",
       year: "2018",
-      publisher: "MIT Press",
+      publisher: "Издательство «Мысль»",
       isbn: "978-0262534567",
       coverImage: "https://picsum.photos/seed/book2/400/600",
-      description: "Dynamic semantics and the evolution of language.",
+      description: "Философский анализ музыкального искусства и его роли в культуре.",
       abstract:
-        "Meaning in Motion challenges static views of semantics, arguing for a fluid interpretative process that mirrors biological cognitive growth.",
+        "Книга «Философия музыки» предлагает глубокий анализ музыкального искусства с позиций философии культуры, рассматривая музыку как отражение цивилизационных процессов.",
       toc: [
-        "Introduction to Dynamic Semantics",
-        "Historical Perspectives",
-        "Cognitive Mechanisms",
-        "Neurolinguistic Evidence",
-        "Modern Applications and Future Directions",
+        "Введение в философию музыки",
+        "Исторические перспективы",
+        "Музыка и когнитивные процессы",
+        "Нейроэстетика музыкального восприятия",
+        "Современные подходы и перспективы",
       ],
       status: "published",
       litresUrl: "https://www.litres.ru/",
@@ -80,34 +80,34 @@ export const seedAll = mutation({
 
     // Seed media
     await ctx.db.insert("mediaItems", {
-      title: "Annual Keynote: The Future of Formalism",
+      title: "Ежегодный доклад: Будущее культурологии",
       date: "2023-11-15",
-      type: "Lecture",
-      description: "Delivered at the International Linguistics Conference.",
+      type: "Лекция",
+      description: "Доклад на Международной конференции по культурологии.",
       videoUrl: "dQw4w9WgXcQ",
-      tags: ["Formalism", "Keynote", "2023"],
+      tags: ["Культурология", "Доклад", "2023"],
       status: "published",
     });
 
     await ctx.db.insert("mediaItems", {
-      title: "Interview with Lexical Radio",
+      title: "Интервью для научного радио",
       date: "2022-05-10",
-      type: "Interview",
+      type: "Интервью",
       description:
-        "A deep dive into cognitive syntax for a general audience.",
+        "Подробный разговор о философии культуры для широкой аудитории.",
       videoUrl: "dQw4w9WgXcQ",
-      tags: ["Interview", "Popular Science"],
+      tags: ["Интервью", "Научпоп"],
       status: "published",
     });
 
     // Seed research
     await ctx.db.insert("researchPapers", {
-      title: "On the Nature of Phase Boundaries",
+      title: "О природе культурных границ",
       year: "2023",
-      journal: "Linguistic Inquiry",
-      authors: "Elena Vance, Marcus Aurelius",
+      journal: "Вопросы культурологии",
+      authors: "Аязбеков С., Аязбекова С.",
       abstract:
-        "This paper provides empirical evidence for the rigidity of phase boundaries in Germanic languages.",
+        "В статье представлены эмпирические данные о формировании и трансформации культурных границ в условиях глобализации.",
       status: "published",
     });
 

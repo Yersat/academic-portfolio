@@ -26,7 +26,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
       onLogin(token);
       navigate('/admin/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid credentials');
+      setError(err instanceof Error ? err.message : 'Неверные учётные данные');
       setIsLoading(false);
     }
   };
@@ -38,13 +38,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
              <Lock size={28} />
            </div>
-           <h1 className="text-2xl font-serif font-bold text-slate-900">CMS Authentication</h1>
-           <p className="text-slate-500 mt-2 text-sm font-medium">Please enter the administrative access key to manage the research portal.</p>
+           <h1 className="text-2xl font-serif font-bold text-slate-900">Авторизация</h1>
+           <p className="text-slate-500 mt-2 text-sm font-medium">Введите пароль администратора для доступа к панели управления.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-1">
-            <label className="text-xs uppercase font-bold tracking-widest text-slate-400">Access Key</label>
+            <label className="text-xs uppercase font-bold tracking-widest text-slate-400">Пароль доступа</label>
             <input
               type="password"
               value={password}
@@ -67,7 +67,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             disabled={isLoading}
             className="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest rounded-md hover:bg-black transition-all shadow-xl disabled:opacity-50"
           >
-            {isLoading ? 'Authenticating...' : 'Access Dashboard'}
+            {isLoading ? 'Авторизация...' : 'Войти в панель'}
           </button>
         </form>
 
@@ -76,7 +76,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             onClick={() => navigate('/')}
             className="inline-flex items-center text-xs text-slate-400 hover:text-slate-600 font-bold uppercase tracking-widest transition-all"
           >
-            <ArrowLeft size={14} className="mr-1" /> Return to Website
+            <ArrowLeft size={14} className="mr-1" /> Вернуться на сайт
           </button>
         </div>
       </div>
