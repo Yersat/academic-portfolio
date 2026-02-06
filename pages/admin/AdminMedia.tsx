@@ -1,22 +1,24 @@
 
 import React from 'react';
-import { SiteData } from '../../types';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import { Id } from '../../convex/_generated/dataModel';
 import { Plus, Video, Trash2, Edit3, Link2 } from 'lucide-react';
 
-interface AdminMediaProps {
-  data: SiteData;
-  onUpdate: (data: SiteData) => void;
-}
+const AdminMedia: React.FC = () => {
+  const media = useQuery(api.profile.listAllMedia);
+  const deleteMedia = useMutation(api.profile.deleteMedia);
+  const sessionToken = localStorage.getItem('admin_session_token') || '';
 
-const AdminMedia: React.FC<AdminMediaProps> = ({ data, onUpdate }) => {
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: Id<"mediaItems">) => {
     if (window.confirm('Are you sure?')) {
-      onUpdate({
-        ...data,
-        media: data.media.filter(m => m.id !== id)
-      });
+      await deleteMedia({ sessionToken, id });
     }
   };
+
+  if (media === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -28,10 +30,10 @@ const AdminMedia: React.FC<AdminMediaProps> = ({ data, onUpdate }) => {
       </div>
 
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {data.media.map((item) => (
-          <div key={item.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden group">
+        {(media || []).map((item) => (
+          <div key={item._id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden group">
             <div className="aspect-video bg-slate-100 relative">
-               <img src={`https://picsum.photos/seed/${item.id}/400/225`} className="w-full h-full object-cover" alt="" />
+               <img src={`https://picsum.photos/seed/${item._id}/400/225`} className="w-full h-full object-cover" alt="" />
                <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                  <button className="bg-white p-3 rounded-full text-slate-900 hover:scale-110 transition-transform">
                    <Video size={20} />
@@ -43,7 +45,7 @@ const AdminMedia: React.FC<AdminMediaProps> = ({ data, onUpdate }) => {
                  ))}
                </div>
             </div>
-            
+
             <div className="p-5 space-y-4">
               <div className="space-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">{item.type}</span>
@@ -60,8 +62,8 @@ const AdminMedia: React.FC<AdminMediaProps> = ({ data, onUpdate }) => {
                      <Link2 size={16} />
                    </button>
                  </div>
-                 <button 
-                  onClick={() => handleDelete(item.id)}
+                 <button
+                  onClick={() => handleDelete(item._id)}
                   className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md"
                  >
                    <Trash2 size={16} />

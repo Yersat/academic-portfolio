@@ -1,13 +1,11 @@
 
 import React, { useState } from 'react';
-import { Profile } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { Mail, MapPin, Building2, Send } from 'lucide-react';
 
-interface ContactProps {
-  profile: Profile;
-}
-
-const Contact: React.FC<ContactProps> = ({ profile }) => {
+const Contact: React.FC = () => {
+  const profile = useQuery(api.profile.getProfile);
   const [sent, setSent] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -15,6 +13,13 @@ const Contact: React.FC<ContactProps> = ({ profile }) => {
     setSent(true);
     setTimeout(() => setSent(false), 5000);
   };
+
+  if (profile === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
+  if (!profile) {
+    return <div className="text-center py-20 text-gray-400">Profile not found</div>;
+  }
 
   return (
     <div className="space-y-16">
@@ -71,18 +76,18 @@ const Contact: React.FC<ContactProps> = ({ profile }) => {
           <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 border border-gray-100 shadow-xl rounded-sm">
             <div className="space-y-2">
               <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Your Name</label>
-              <input 
+              <input
                 required
-                type="text" 
+                type="text"
                 className="w-full px-4 py-3 bg-gray-50 border-transparent border-b-gray-200 border-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-sm font-medium"
                 placeholder="Jane Doe"
               />
             </div>
             <div className="space-y-2">
               <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Academic Email</label>
-              <input 
+              <input
                 required
-                type="email" 
+                type="email"
                 className="w-full px-4 py-3 bg-gray-50 border-transparent border-b-gray-200 border-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-sm font-medium"
                 placeholder="jane@university.edu"
               />
@@ -98,16 +103,16 @@ const Contact: React.FC<ContactProps> = ({ profile }) => {
             </div>
             <div className="space-y-2">
               <label className="text-xs uppercase font-bold tracking-widest text-gray-400">Message</label>
-              <textarea 
+              <textarea
                 required
                 rows={5}
                 className="w-full px-4 py-3 bg-gray-50 border-transparent border-b-gray-200 border-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-sm font-medium resize-none"
                 placeholder="How can I help you?"
               />
             </div>
-            
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               disabled={sent}
               className={`w-full py-4 flex items-center justify-center font-bold uppercase tracking-widest text-sm rounded-sm transition-all ${
                 sent ? 'bg-emerald-500 text-white' : 'bg-gray-900 text-white hover:bg-black'

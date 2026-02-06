@@ -1,13 +1,19 @@
 
 import React from 'react';
-import { Profile } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { Download } from 'lucide-react';
 
-interface AboutProps {
-  profile: Profile;
-}
+const About: React.FC = () => {
+  const profile = useQuery(api.profile.getProfile);
 
-const About: React.FC<AboutProps> = ({ profile }) => {
+  if (profile === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
+  if (!profile) {
+    return <div className="text-center py-20 text-gray-400">Profile not found</div>;
+  }
+
   return (
     <div className="space-y-24 animate-fade-in max-w-2xl mx-auto">
       <header className="space-y-6 text-center">
@@ -29,7 +35,7 @@ const About: React.FC<AboutProps> = ({ profile }) => {
 
         <div className="space-y-12 pt-16 border-t border-gray-200">
           <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Curriculum Vitae</h4>
-          
+
           <div className="grid gap-12">
             {[
               { year: '2018—Now', role: 'Full Professor', context: 'Theoretical Linguistics, State University' },
@@ -47,8 +53,8 @@ const About: React.FC<AboutProps> = ({ profile }) => {
           </div>
 
           <div className="pt-12">
-            <a 
-              href={profile.cvUrl} 
+            <a
+              href={profile.cvUrl}
               className="inline-flex items-center gap-4 text-[11px] font-bold uppercase tracking-[0.2em] text-black border-b-2 border-black pb-2 hover:text-gray-600 hover:border-gray-400 transition-all"
             >
               <Download size={14} /> Download PDF Version

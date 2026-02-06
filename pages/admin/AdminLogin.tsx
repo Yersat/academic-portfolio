@@ -1,25 +1,33 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { Lock, ArrowLeft } from 'lucide-react';
 
 interface AdminLoginProps {
-  onLogin: () => void;
+  onLogin: (token: string) => void;
 }
 
 const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const login = useMutation(api.auth.adminLogin);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Static mock auth
-    if (password === 'academic2024') {
-      onLogin();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const { token } = await login({ password });
+      onLogin(token);
       navigate('/admin/dashboard');
-    } else {
-      setError('Invalid academic credentials');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid credentials');
+      setIsLoading(false);
     }
   };
 
@@ -37,13 +45,14 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-1">
             <label className="text-xs uppercase font-bold tracking-widest text-slate-400">Access Key</label>
-            <input 
+            <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 border-slate-200 border-2 rounded-md outline-none focus:border-blue-600 transition-all text-center tracking-[0.5em]"
               placeholder="••••••••"
               autoFocus
+              disabled={isLoading}
             />
           </div>
 
@@ -53,16 +62,17 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             </div>
           )}
 
-          <button 
+          <button
             type="submit"
-            className="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest rounded-md hover:bg-black transition-all shadow-xl"
+            disabled={isLoading}
+            className="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest rounded-md hover:bg-black transition-all shadow-xl disabled:opacity-50"
           >
-            Access Dashboard
+            {isLoading ? 'Authenticating...' : 'Access Dashboard'}
           </button>
         </form>
 
         <div className="text-center">
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="inline-flex items-center text-xs text-slate-400 hover:text-slate-600 font-bold uppercase tracking-widest transition-all"
           >

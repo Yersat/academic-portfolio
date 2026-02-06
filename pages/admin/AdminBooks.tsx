@@ -1,12 +1,9 @@
 
 import React, { useState } from 'react';
-import { SiteData, Book } from '../../types';
-import { Plus, Search, Filter, Edit3, Trash2, Globe, FileX, X, ExternalLink, FileText } from 'lucide-react';
-
-interface AdminBooksProps {
-  data: SiteData;
-  onUpdate: (data: SiteData) => void;
-}
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import { Id } from '../../convex/_generated/dataModel';
+import { Plus, Search, Filter, Edit3, Trash2, Globe, FileX, X, ExternalLink, FileText, Upload } from 'lucide-react';
 
 interface BookFormData {
   title: string;
@@ -20,7 +17,6 @@ interface BookFormData {
   litresUrl: string;
   pdfPrice: string;
   pdfCurrency: 'KZT' | 'RUB';
-  pdfFilePath: string;
 }
 
 const emptyFormData: BookFormData = {
@@ -35,26 +31,32 @@ const emptyFormData: BookFormData = {
   litresUrl: '',
   pdfPrice: '',
   pdfCurrency: 'KZT',
-  pdfFilePath: ''
 };
 
-const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
+const AdminBooks: React.FC = () => {
+  const books = useQuery(api.books.listAll);
+  const createBook = useMutation(api.admin.createBook);
+  const updateBook = useMutation(api.admin.updateBook);
+  const deleteBook = useMutation(api.admin.deleteBook);
+  const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
+  const attachPdf = useMutation(api.admin.attachPdf);
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [editingBookId, setEditingBookId] = useState<Id<"books"> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<BookFormData>(emptyFormData);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleDelete = (id: string) => {
+  const sessionToken = localStorage.getItem('admin_session_token') || '';
+
+  const handleDelete = async (id: Id<"books">) => {
     if (window.confirm('Вы уверены, что хотите удалить эту книгу? Это действие необратимо.')) {
-      onUpdate({
-        ...data,
-        books: data.books.filter(b => b.id !== id)
-      });
+      await deleteBook({ sessionToken, id });
     }
   };
 
-  const handleEdit = (book: Book) => {
-    setEditingBook(book);
+  const handleEdit = (book: any) => {
+    setEditingBookId(book._id);
     setFormData({
       title: book.title,
       year: book.year,
@@ -67,54 +69,75 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
       litresUrl: book.litresUrl || '',
       pdfPrice: book.pdfPrice?.toString() || '',
       pdfCurrency: book.pdfCurrency || 'KZT',
-      pdfFilePath: book.pdfFilePath || ''
     });
     setIsModalOpen(true);
   };
 
   const handleCreate = () => {
-    setEditingBook(null);
+    setEditingBookId(null);
     setFormData(emptyFormData);
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    const bookData: Book = {
-      id: editingBook?.id || Date.now().toString(),
-      title: formData.title,
-      year: formData.year,
-      publisher: formData.publisher,
-      isbn: formData.isbn,
-      coverImage: formData.coverImage || 'https://picsum.photos/seed/newbook/400/600',
-      description: formData.description,
-      abstract: formData.abstract,
-      status: formData.status,
-      purchaseLinks: editingBook?.purchaseLinks || [],
-      litresUrl: formData.litresUrl || undefined,
-      pdfPrice: formData.pdfPrice ? parseFloat(formData.pdfPrice) : undefined,
-      pdfCurrency: formData.pdfCurrency,
-      pdfFilePath: formData.pdfFilePath || undefined,
-      isPublished: formData.status === 'published'
-    };
-
-    if (editingBook) {
-      onUpdate({
-        ...data,
-        books: data.books.map(b => b.id === editingBook.id ? bookData : b)
+  const handleSave = async () => {
+    if (editingBookId) {
+      await updateBook({
+        sessionToken,
+        id: editingBookId,
+        title: formData.title,
+        year: formData.year,
+        publisher: formData.publisher,
+        isbn: formData.isbn,
+        coverImage: formData.coverImage || 'https://picsum.photos/seed/newbook/400/600',
+        description: formData.description,
+        abstract: formData.abstract,
+        status: formData.status,
+        litresUrl: formData.litresUrl || undefined,
+        pdfPrice: formData.pdfPrice ? parseFloat(formData.pdfPrice) : undefined,
+        pdfCurrency: formData.pdfCurrency,
+        isPublished: formData.status === 'published',
       });
     } else {
-      onUpdate({
-        ...data,
-        books: [...data.books, bookData]
+      await createBook({
+        sessionToken,
+        title: formData.title,
+        year: formData.year,
+        publisher: formData.publisher,
+        isbn: formData.isbn,
+        coverImage: formData.coverImage || 'https://picsum.photos/seed/newbook/400/600',
+        description: formData.description,
+        abstract: formData.abstract,
+        status: formData.status,
+        litresUrl: formData.litresUrl || undefined,
+        pdfPrice: formData.pdfPrice ? parseFloat(formData.pdfPrice) : undefined,
+        pdfCurrency: formData.pdfCurrency,
+        isPublished: formData.status === 'published',
       });
     }
 
     setIsModalOpen(false);
-    setEditingBook(null);
+    setEditingBookId(null);
     setFormData(emptyFormData);
   };
 
-  const filteredBooks = data.books.filter(b =>
+  const handlePdfUpload = async (bookId: Id<"books">, file: File) => {
+    setIsUploading(true);
+    try {
+      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const result = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      const { storageId } = await result.json();
+      await attachPdf({ sessionToken, bookId, storageId });
+    } catch (err) {
+      console.error('Upload failed:', err);
+    }
+    setIsUploading(false);
+  };
+
+  const filteredBooks = (books || []).filter(b =>
     b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     b.publisher.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -125,6 +148,10 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
     }
     return `${price.toLocaleString('ru-RU')} ₽`;
   };
+
+  if (books === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -159,13 +186,14 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Книга</th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Издательство</th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Покупка</th>
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">PDF</th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Статус</th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400 text-right">Действия</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {filteredBooks.map((book) => (
-              <tr key={book.id} className="hover:bg-slate-50/50 transition-colors">
+              <tr key={book._id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
                     <img src={book.coverImage} className="w-10 h-14 object-cover rounded shadow-sm" alt="" />
@@ -197,6 +225,29 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    {book.pdfStorageId ? (
+                      <span className="text-xs text-emerald-600 font-bold">Загружен</span>
+                    ) : (
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handlePdfUpload(book._id, file);
+                          }}
+                          disabled={isUploading}
+                        />
+                        <span className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 cursor-pointer">
+                          <Upload size={10} /> {isUploading ? 'Загрузка...' : 'Загрузить'}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tighter ${book.status === 'published' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
                     }`}>
                     {book.status === 'published' ? 'Опубликовано' : 'Черновик'}
@@ -214,7 +265,7 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
                       <Globe size={18} />
                     </button>
                     <button
-                      onClick={() => handleDelete(book.id)}
+                      onClick={() => handleDelete(book._id)}
                       className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all"
                     >
                       <Trash2 size={18} />
@@ -246,7 +297,7 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white">
               <h2 className="text-xl font-bold text-gray-900">
-                {editingBook ? 'Редактировать книгу' : 'Добавить книгу'}
+                {editingBookId ? 'Редактировать книгу' : 'Добавить книгу'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -349,9 +400,7 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ссылка на Литрес
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ссылка на Литрес</label>
                     <input
                       type="url"
                       value={formData.litresUrl}
@@ -361,9 +410,7 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Цена PDF
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Цена PDF</label>
                     <input
                       type="number"
                       value={formData.pdfPrice}
@@ -375,32 +422,15 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Валюта
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Валюта</label>
                     <select
                       value={formData.pdfCurrency}
                       onChange={(e) => setFormData({ ...formData, pdfCurrency: e.target.value as 'KZT' | 'RUB' })}
                       className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
                     >
-                      <option value="KZT">₸ Тенге (KZT)</option>
-                      <option value="RUB">₽ Рубль (RUB)</option>
+                      <option value="KZT">Тенге (KZT)</option>
+                      <option value="RUB">Рубль (RUB)</option>
                     </select>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Путь к PDF файлу на сервере
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.pdfFilePath}
-                      onChange={(e) => setFormData({ ...formData, pdfFilePath: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
-                      placeholder="pdfs/book-name.pdf"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Относительный путь в папке server/uploads/
-                    </p>
                   </div>
                 </div>
               </div>
@@ -419,7 +449,7 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ data, onUpdate }) => {
                 disabled={!formData.title || !formData.year || !formData.publisher}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {editingBook ? 'Сохранить' : 'Создать'}
+                {editingBookId ? 'Сохранить' : 'Создать'}
               </button>
             </div>
           </div>

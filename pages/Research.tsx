@@ -1,14 +1,15 @@
 
 import React from 'react';
-import { ResearchPaper } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { FileText } from 'lucide-react';
 
-interface ResearchProps {
-  research: ResearchPaper[];
-}
+const Research: React.FC = () => {
+  const research = useQuery(api.profile.listResearch);
 
-const Research: React.FC<ResearchProps> = ({ research }) => {
-  const published = research.filter(r => r.status === 'published');
+  if (research === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
 
   return (
     <div className="space-y-20 animate-fade-in max-w-3xl mx-auto">
@@ -20,8 +21,8 @@ const Research: React.FC<ResearchProps> = ({ research }) => {
       </header>
 
       <div className="space-y-16">
-        {published.map(paper => (
-          <article key={paper.id} className="group space-y-4">
+        {(research || []).map(paper => (
+          <article key={paper._id} className="group space-y-4">
             <div className="flex items-start justify-between gap-6">
               <div className="space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600">
@@ -46,7 +47,7 @@ const Research: React.FC<ResearchProps> = ({ research }) => {
                 Journal Link
               </button>
             </div>
-            
+
             <div className="pt-8 border-b border-gray-200 w-24"></div>
           </article>
         ))}

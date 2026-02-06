@@ -1,14 +1,15 @@
 
 import React from 'react';
-import { MediaItem } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { ExternalLink } from 'lucide-react';
 
-interface MediaProps {
-  media: MediaItem[];
-}
+const Media: React.FC = () => {
+  const media = useQuery(api.profile.listMedia);
 
-const Media: React.FC<MediaProps> = ({ media }) => {
-  const publishedMedia = media.filter(m => m.status === 'published');
+  if (media === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
 
   return (
     <div className="space-y-20 animate-fade-in max-w-4xl mx-auto">
@@ -20,8 +21,8 @@ const Media: React.FC<MediaProps> = ({ media }) => {
       </header>
 
       <div className="space-y-24">
-        {publishedMedia.map(item => (
-          <div key={item.id} className="space-y-8 pb-16 border-b border-gray-200 last:border-0">
+        {(media || []).map(item => (
+          <div key={item._id} className="space-y-8 pb-16 border-b border-gray-200 last:border-0">
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600">{item.type}</span>
@@ -54,14 +55,16 @@ const Media: React.FC<MediaProps> = ({ media }) => {
                <button className="flex items-center text-xs font-bold uppercase tracking-widest text-black border-b border-black pb-1">
                  Full Transcript
                </button>
-               <a 
-                href={`https://youtube.com/watch?v=${item.videoUrl}`} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="flex items-center text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-black transition-colors"
-               >
-                 View on YouTube <ExternalLink size={12} className="ml-2" />
-               </a>
+               {item.videoUrl && (
+                 <a
+                  href={`https://youtube.com/watch?v=${item.videoUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-black transition-colors"
+                 >
+                   View on YouTube <ExternalLink size={12} className="ml-2" />
+                 </a>
+               )}
             </div>
           </div>
         ))}

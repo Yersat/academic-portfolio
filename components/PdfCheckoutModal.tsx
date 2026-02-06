@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { X, Mail, Loader2, AlertCircle, CreditCard } from 'lucide-react';
-import { Book } from '../types';
-import { checkoutPdf } from '../api';
+import { useAction } from 'convex/react';
+import { api } from '../convex/_generated/api';
+import { Id } from '../convex/_generated/dataModel';
 
 interface PdfCheckoutModalProps {
-    book: Book;
+    bookId: Id<"books">;
+    bookTitle: string;
+    pdfPrice?: number;
+    pdfCurrency?: string;
     isOpen: boolean;
     onClose: () => void;
 }
 
-const PdfCheckoutModal: React.FC<PdfCheckoutModalProps> = ({ book, isOpen, onClose }) => {
+const PdfCheckoutModal: React.FC<PdfCheckoutModalProps> = ({ bookId, bookTitle, pdfPrice, pdfCurrency, isOpen, onClose }) => {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const checkout = useAction(api.checkout.initiatePdfCheckout);
 
     if (!isOpen) return null;
 
@@ -29,13 +34,12 @@ const PdfCheckoutModal: React.FC<PdfCheckoutModalProps> = ({ book, isOpen, onClo
         setIsLoading(true);
 
         try {
-            // Basic email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 throw new Error('Пожалуйста, введите корректный email');
             }
 
-            const response = await checkoutPdf(book.id, email);
+            const response = await checkout({ bookId, email });
 
             // Redirect to Robokassa
             window.location.href = response.redirectUrl;
@@ -65,7 +69,7 @@ const PdfCheckoutModal: React.FC<PdfCheckoutModalProps> = ({ book, isOpen, onClo
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-gray-900">Купить PDF версию</h2>
-                            <p className="text-xs text-gray-500">{book.title}</p>
+                            <p className="text-xs text-gray-500">{bookTitle}</p>
                         </div>
                     </div>
                     <button
@@ -83,8 +87,8 @@ const PdfCheckoutModal: React.FC<PdfCheckoutModalProps> = ({ book, isOpen, onClo
                         <div className="flex justify-between items-center">
                             <span className="text-sm text-gray-600">Стоимость PDF:</span>
                             <span className="text-2xl font-bold text-gray-900">
-                                {book.pdfPrice && book.pdfCurrency
-                                    ? formatPrice(book.pdfPrice, book.pdfCurrency)
+                                {pdfPrice && pdfCurrency
+                                    ? formatPrice(pdfPrice, pdfCurrency)
                                     : 'Цена не указана'}
                             </span>
                         </div>

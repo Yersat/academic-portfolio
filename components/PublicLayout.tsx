@@ -2,15 +2,13 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { Profile } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 
-interface PublicLayoutProps {
-  profile: Profile;
-}
-
-const PublicLayout: React.FC<PublicLayoutProps> = ({ profile }) => {
+const PublicLayout: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const profile = useQuery(api.profile.getProfile);
 
   const navItems = [
     { name: 'Overview', path: '/' },
@@ -22,6 +20,10 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ profile }) => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const profileName = profile?.name || 'Academic Portfolio';
+  const profileTitle = profile?.title || '';
+  const profileUniversity = profile?.university || '';
 
   return (
     <div className="min-h-screen bg-[#fbfaf8] text-[#000000] selection:bg-gray-300">
@@ -44,8 +46,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ profile }) => {
 
           {/* Mobile Nav Toggle */}
           <div className="md:hidden flex w-full justify-between items-center">
-             <Link to="/" className="text-sm font-serif font-bold italic text-black">{profile.name}</Link>
-             <button 
+             <Link to="/" className="text-sm font-serif font-bold italic text-black">{profileName}</Link>
+             <button
                onClick={() => setIsMenuOpen(!isMenuOpen)}
                className="flex items-center space-x-2 text-[11px] uppercase tracking-[0.2em] font-bold text-black"
              >
@@ -77,9 +79,9 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ profile }) => {
       <header className="relative w-full">
         {/* Cover Image - Improved Contrast */}
         <div className="w-full h-56 md:h-72 overflow-hidden relative bg-gray-900">
-          <img 
-            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=1600" 
-            alt="Cover" 
+          <img
+            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=1600"
+            alt="Cover"
             className="w-full h-full object-cover grayscale opacity-60"
           />
           {/* Multi-layered gradient for better contrast and fade */}
@@ -91,19 +93,19 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ profile }) => {
         <div className="max-w-4xl mx-auto px-6 md:px-0 -mt-24 md:-mt-32 relative z-10 flex flex-col items-center">
           {/* Profile Photo */}
           <div className="mb-6 group">
-            <img 
-              src="https://picsum.photos/seed/academic/400/400" 
-              alt={profile.name} 
+            <img
+              src="https://picsum.photos/seed/academic/400/400"
+              alt={profileName}
               className="w-36 h-36 md:w-48 md:h-48 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl border-[6px] border-[#fbfaf8] bg-white"
             />
           </div>
-          
+
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-serif font-bold text-black tracking-tight mb-3">
-              {profile.name}
+              {profileName}
             </h1>
             <p className="text-sm text-black font-bold uppercase tracking-[0.3em]">
-              {profile.title}
+              {profileTitle}
             </p>
           </div>
         </div>
@@ -116,7 +118,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ profile }) => {
 
       {/* Footer */}
       <footer className="max-w-4xl mx-auto px-6 py-16 border-t border-gray-300 text-center text-[11px] text-black uppercase tracking-[0.15em] font-bold">
-        <p>© {new Date().getFullYear()} {profile.name} — {profile.university}</p>
+        <p>© {new Date().getFullYear()} {profileName} — {profileUniversity}</p>
         <div className="mt-6 opacity-60 hover:opacity-100 transition-opacity flex justify-center space-x-8">
           <Link to="/admin" className="hover:underline">Internal CMS</Link>
           <a href="#" className="hover:underline">Privacy Policy</a>

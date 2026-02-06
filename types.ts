@@ -1,6 +1,8 @@
+// Legacy type interfaces — prefer using Doc<"tableName"> from convex/_generated/dataModel
+// These are kept as lightweight reference types for components that don't directly import Convex types.
 
 export interface Book {
-  id: string;
+  _id: string;
   title: string;
   year: string;
   publisher: string;
@@ -9,30 +11,27 @@ export interface Book {
   description: string;
   abstract: string;
   toc?: string[];
-  purchaseLinks: { label: string; url: string }[];
   status: 'published' | 'draft';
-
-  // New fields for purchase functionality
   litresUrl?: string;
   pdfPrice?: number;
   pdfCurrency?: 'KZT' | 'RUB';
-  pdfFilePath?: string;
-  isPublished?: boolean;
+  pdfStorageId?: string;
+  isPublished: boolean;
 }
 
 export interface MediaItem {
-  id: string;
+  _id: string;
   title: string;
   date: string;
   type: 'Lecture' | 'Interview' | 'Conference' | 'Talk';
   description: string;
-  videoUrl?: string; // YouTube ID or URL
+  videoUrl?: string;
   tags: string[];
   status: 'published' | 'draft';
 }
 
 export interface ResearchPaper {
-  id: string;
+  _id: string;
   title: string;
   year: string;
   journal?: string;
@@ -52,23 +51,4 @@ export interface Profile {
   email: string;
   location: string;
   cvUrl: string;
-}
-
-export interface SiteData {
-  profile: Profile;
-  books: Book[];
-  media: MediaItem[];
-  research: ResearchPaper[];
-}
-
-// API response types
-export interface CheckoutResponse {
-  redirectUrl: string;
-  orderId: string;
-  message: string;
-}
-
-export interface ApiError {
-  error: string;
-  message?: string;
 }

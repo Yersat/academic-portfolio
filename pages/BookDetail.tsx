@@ -1,19 +1,20 @@
 
 import React, { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { Book } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
+import { Id } from '../convex/_generated/dataModel';
 import { ArrowLeft, ShoppingCart, Share2, Info, FileText, ExternalLink } from 'lucide-react';
 import PdfCheckoutModal from '../components/PdfCheckoutModal';
 
-interface BookDetailProps {
-  books: Book[];
-}
-
-const BookDetail: React.FC<BookDetailProps> = ({ books }) => {
+const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const book = books.find(b => b.id === id);
+  const book = useQuery(api.books.getById, id ? { id: id as Id<"books"> } : "skip");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
+  if (book === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
   if (!book) return <Navigate to="/books" />;
 
   const formatPrice = (price: number, currency: string) => {
@@ -122,15 +123,6 @@ const BookDetail: React.FC<BookDetailProps> = ({ books }) => {
           </div>
 
           <div className="flex flex-wrap gap-4 pt-4">
-            {book.purchaseLinks.map((link, idx) => (
-              <a
-                key={idx}
-                href={link.url}
-                className="inline-flex items-center px-8 py-4 bg-gray-900 text-white font-bold tracking-widest text-sm rounded-sm hover:bg-black transition-all"
-              >
-                <ShoppingCart size={18} className="mr-2" /> Купить: {link.label}
-              </a>
-            ))}
             <button className="p-4 border border-gray-200 text-gray-400 hover:text-gray-900 hover:border-gray-400 transition-all">
               <Share2 size={20} />
             </button>
@@ -147,26 +139,15 @@ const BookDetail: React.FC<BookDetailProps> = ({ books }) => {
               </ol>
             </section>
           )}
-
-          {/* Static TOC fallback */}
-          {(!book.toc || book.toc.length === 0) && (
-            <section className="pt-8 border-t border-gray-100 space-y-4">
-              <h3 className="text-lg font-serif font-bold">Краткое содержание</h3>
-              <ol className="list-decimal list-inside space-y-2 text-gray-600 text-sm italic pl-4 font-light">
-                <li>Preliminaries: The Internal System of Meaning</li>
-                <li>Recursive Structures and Functional Heads</li>
-                <li>A New Model for Phase Inheritance</li>
-                <li>Empirical Evidence from Romance Dialects</li>
-                <li>Concluding Remarks on Biolinguistics</li>
-              </ol>
-            </section>
-          )}
         </div>
       </div>
 
       {/* Checkout Modal */}
       <PdfCheckoutModal
-        book={book}
+        bookId={book._id}
+        bookTitle={book.title}
+        pdfPrice={book.pdfPrice}
+        pdfCurrency={book.pdfCurrency}
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
       />

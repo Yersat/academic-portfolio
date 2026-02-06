@@ -1,44 +1,49 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { SiteData } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { ArrowRight } from 'lucide-react';
 
-interface HomeProps {
-  data: SiteData;
-}
+const Home: React.FC = () => {
+  const profile = useQuery(api.profile.getProfile);
+  const books = useQuery(api.books.listPublished);
 
-const Home: React.FC<HomeProps> = ({ data }) => {
-  const { profile, books } = data;
-  const featuredBooks = books.filter(b => b.status === 'published').slice(0, 2);
+  if (profile === undefined || books === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
+
+  const featuredBooks = (books || []).slice(0, 2);
 
   return (
     <div className="space-y-24 animate-fade-in max-w-2xl mx-auto">
       {/* Narrative Section */}
-      <section className="space-y-10">
-        <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 space-y-8 text-lg md:text-xl">
-          <p className="first-letter:text-7xl first-letter:font-serif first-letter:float-left first-letter:mr-3 first-letter:text-black first-letter:mt-1">
-            {profile.bio}
-          </p>
-          <p>
-            {profile.extendedBio}
-          </p>
-          <p>
-            My current research at {profile.university} focuses on the formal constraints of human syntax. I seek to bridge the gap between abstract mathematical models of grammar and the biological reality of neuro-linguistic processing.
-          </p>
-        </div>
-
-        <div className="pt-12 border-t border-gray-200">
-           <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-500 mb-8">Selected Interests</h3>
-           <div className="flex flex-wrap gap-x-12 gap-y-6">
-            {profile.researchInterests.map(interest => (
-              <span key={interest} className="text-[11px] uppercase tracking-[0.15em] font-bold text-gray-700">
-                {interest}
-              </span>
-            ))}
+      {profile && (
+        <section className="space-y-10">
+          <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 space-y-8 text-lg md:text-xl">
+            <p className="first-letter:text-7xl first-letter:font-serif first-letter:float-left first-letter:mr-3 first-letter:text-black first-letter:mt-1">
+              {profile.bio}
+            </p>
+            <p>
+              {profile.extendedBio}
+            </p>
+            <p>
+              My current research at {profile.university} focuses on the formal constraints of human syntax. I seek to bridge the gap between abstract mathematical models of grammar and the biological reality of neuro-linguistic processing.
+            </p>
           </div>
-        </div>
-      </section>
+
+          <div className="pt-12 border-t border-gray-200">
+             <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-500 mb-8">Selected Interests</h3>
+             <div className="flex flex-wrap gap-x-12 gap-y-6">
+              {profile.researchInterests.map(interest => (
+                <span key={interest} className="text-[11px] uppercase tracking-[0.15em] font-bold text-gray-700">
+                  {interest}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Featured Books Preview */}
       <section className="space-y-12 pt-12 border-t border-gray-200">
@@ -51,11 +56,11 @@ const Home: React.FC<HomeProps> = ({ data }) => {
 
         <div className="grid sm:grid-cols-2 gap-12">
           {featuredBooks.map((book) => (
-            <Link key={book.id} to={`/books/${book.id}`} className="group space-y-6">
+            <Link key={book._id} to={`/books/${book._id}`} className="group space-y-6">
               <div className="aspect-[3/4] bg-white shadow-lg overflow-hidden relative">
-                <img 
-                  src={book.coverImage} 
-                  alt={book.title} 
+                <img
+                  src={book.coverImage}
+                  alt={book.title}
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />

@@ -1,15 +1,16 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book } from '../types';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { ShoppingCart, ArrowRight, FileText } from 'lucide-react';
 
-interface BooksProps {
-  books: Book[];
-}
+const Books: React.FC = () => {
+  const books = useQuery(api.books.listPublished);
 
-const Books: React.FC<BooksProps> = ({ books }) => {
-  const publishedBooks = books.filter(b => b.status === 'published');
+  if (books === undefined) {
+    return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  }
 
   const formatPrice = (price: number, currency: string) => {
     if (currency === 'KZT') {
@@ -28,10 +29,10 @@ const Books: React.FC<BooksProps> = ({ books }) => {
       </header>
 
       <div className="space-y-32">
-        {publishedBooks.map(book => (
-          <div key={book.id} className="group grid md:grid-cols-5 gap-16 items-start">
+        {(books || []).map(book => (
+          <div key={book._id} className="group grid md:grid-cols-5 gap-16 items-start">
             <div className="md:col-span-2">
-              <Link to={`/books/${book.id}`}>
+              <Link to={`/books/${book._id}`}>
                 <div className="relative overflow-hidden bg-white shadow-md transition-all duration-700 group-hover:shadow-2xl">
                   <img
                     src={book.coverImage}
@@ -47,7 +48,7 @@ const Books: React.FC<BooksProps> = ({ books }) => {
                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-600">
                   {book.publisher} — {book.year}
                 </span>
-                <Link to={`/books/${book.id}`}>
+                <Link to={`/books/${book._id}`}>
                   <h2 className="text-3xl font-serif font-bold leading-tight group-hover:text-gray-700 transition-colors text-black">
                     {book.title}
                   </h2>
@@ -79,19 +80,8 @@ const Books: React.FC<BooksProps> = ({ books }) => {
                   </a>
                 )}
 
-                {/* Legacy purchase links */}
-                {book.purchaseLinks.map((link, idx) => (
-                  <a
-                    key={idx}
-                    href={link.url}
-                    className="flex items-center text-[10px] font-bold uppercase tracking-[0.25em] text-black hover:text-gray-600 transition-colors border-b border-gray-200 pb-2 w-fit"
-                  >
-                    <ShoppingCart size={12} className="mr-3" /> Купить: {link.label}
-                  </a>
-                ))}
-
                 <Link
-                  to={`/books/${book.id}`}
+                  to={`/books/${book._id}`}
                   className="flex items-center text-[10px] font-bold uppercase tracking-[0.25em] text-gray-600 hover:text-black transition-colors pt-2"
                 >
                   Подробнее <ArrowRight size={12} className="ml-2" />
