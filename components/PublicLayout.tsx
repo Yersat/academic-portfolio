@@ -12,7 +12,7 @@ const PublicLayout: React.FC = () => {
 
   const navItems = [
     { name: 'Главная', path: '/' },
-    { name: 'О нас', path: '/about' },
+    { name: 'Обо мне', path: '/about' },
     { name: 'Книги', path: '/books' },
     { name: 'Лекции', path: '/media' },
     { name: 'Исследования', path: '/research' },
@@ -45,7 +45,7 @@ const PublicLayout: React.FC = () => {
 
           {/* Mobile Nav Toggle */}
           <div className="md:hidden flex w-full justify-between items-center">
-             <Link to="/" className="text-sm font-serif font-bold italic text-black">Аязбековы</Link>
+             <Link to="/" className="text-sm font-serif font-bold italic text-black">Аязбекова Сабина</Link>
              <button
                onClick={() => setIsMenuOpen(!isMenuOpen)}
                className="flex items-center space-x-2 text-[11px] uppercase tracking-[0.2em] font-bold text-black"
@@ -79,40 +79,27 @@ const PublicLayout: React.FC = () => {
         {/* Cover Image */}
         <div className="w-full h-56 md:h-72 overflow-hidden relative bg-gray-900">
           <img
-            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=1600"
+            src="/cover-photo.jpg"
             alt="Cover"
-            className="w-full h-full object-cover grayscale opacity-60"
+            className="w-full h-full object-cover opacity-60"
           />
           <div className="absolute inset-0 bg-black/40"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fbfaf8]"></div>
         </div>
 
-        {/* Dual Profile Identity */}
+        {/* Profile Identity */}
         <div className="max-w-4xl mx-auto px-6 md:px-0 -mt-24 md:-mt-32 relative z-10 flex flex-col items-center">
-          {/* Two Profile Photos */}
-          <div className="flex items-end justify-center gap-4 md:gap-6 mb-6">
-            <div className="group">
-              <img
-                src="https://picsum.photos/seed/professor1/400/400"
-                alt="Аязбеков Скандарбек"
-                className="w-28 h-28 md:w-40 md:h-40 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl border-[5px] border-[#fbfaf8] bg-white"
-              />
-            </div>
-            <div className="group">
-              <img
-                src="https://picsum.photos/seed/professor2/400/400"
-                alt="Аязбекова Сабина"
-                className="w-28 h-28 md:w-40 md:h-40 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl border-[5px] border-[#fbfaf8] bg-white"
-              />
-            </div>
+          <div className="mb-6">
+            <img
+              src="/profile-sabina.jpg"
+              alt="Аязбекова Сабина"
+              className="w-36 h-36 md:w-44 md:h-44 rounded-full object-cover shadow-2xl border-[5px] border-[#fbfaf8] bg-white"
+            />
           </div>
 
           <div className="text-center">
-            <h1 className="text-3xl md:text-5xl font-serif font-bold text-black tracking-tight mb-1">
-              Аязбеков Скандарбек
-            </h1>
             <h1 className="text-3xl md:text-5xl font-serif font-bold text-black tracking-tight mb-3">
-              <span className="text-gray-400 text-2xl md:text-3xl">&amp;</span> Аязбекова Сабина
+              Аязбекова Сабина
             </h1>
             <p className="text-sm text-black font-bold uppercase tracking-[0.3em]">
               {profileTitle}
@@ -128,7 +115,7 @@ const PublicLayout: React.FC = () => {
 
       {/* Footer */}
       <footer className="max-w-4xl mx-auto px-6 py-16 border-t border-gray-300 text-center text-[11px] text-black uppercase tracking-[0.15em] font-bold">
-        <p>&copy; {new Date().getFullYear()} Аязбеков Скандарбек &amp; Аязбекова Сабина — {profileUniversity}</p>
+        <p>&copy; {new Date().getFullYear()} Аязбекова Сабина — {profileUniversity}</p>
         <div className="mt-6 opacity-60 hover:opacity-100 transition-opacity flex justify-center space-x-8">
           <Link to="/admin" className="hover:underline">Панель управления</Link>
           <a href="#" className="hover:underline">Политика конфиденциальности</a>
