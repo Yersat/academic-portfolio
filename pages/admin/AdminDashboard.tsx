@@ -2,7 +2,7 @@
 import React from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import { Book, Video, FileText, Eye, TrendingUp, Calendar, ArrowUpRight } from 'lucide-react';
+import { Book, Video, FileText, Eye, TrendingUp, Calendar, ArrowUpRight, Users, Image } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const AdminDashboard: React.FC = () => {
@@ -10,11 +10,15 @@ const AdminDashboard: React.FC = () => {
   const media = useQuery(api.profile.listAllMedia);
   const research = useQuery(api.profile.listAllResearch);
   const orders = useQuery(api.orders.listOrders);
+  const coAuthors = useQuery(api.coAuthors.listAll);
+  const gallery = useQuery(api.gallery.listAll);
 
   const stats = [
     { label: 'Книги', value: books?.length ?? 0, icon: Book, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Медиа', value: media?.length ?? 0, icon: Video, color: 'text-amber-600', bg: 'bg-amber-50' },
     { label: 'Статьи', value: research?.length ?? 0, icon: FileText, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: 'Видео', value: media?.length ?? 0, icon: Video, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Со-авторы', value: coAuthors?.length ?? 0, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Фото', value: gallery?.length ?? 0, icon: Image, color: 'text-pink-600', bg: 'bg-pink-50' },
     { label: 'Заказы', value: orders?.length ?? 0, icon: Eye, color: 'text-slate-600', bg: 'bg-slate-50' },
   ];
 
@@ -31,19 +35,16 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-4 gap-6">
+      <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-lg flex items-center justify-center`}>
-                <stat.icon size={24} />
+          <div key={i} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className={`w-10 h-10 ${stat.bg} ${stat.color} rounded-lg flex items-center justify-center`}>
+                <stat.icon size={20} />
               </div>
-              <span className="text-xs font-bold text-emerald-500 flex items-center">
-                <TrendingUp size={14} className="mr-1" /> +12%
-              </span>
             </div>
-            <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">{stat.label}</p>
-            <h3 className="text-3xl font-bold text-slate-900 mt-1">{stat.value}</h3>
+            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">{stat.label}</p>
+            <h3 className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</h3>
           </div>
         ))}
       </div>

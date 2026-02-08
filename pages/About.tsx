@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
-import { Download } from 'lucide-react';
+import { Download, ArrowRight } from 'lucide-react';
 
 const About: React.FC = () => {
   const profile = useQuery(api.profile.getProfile);
@@ -60,25 +61,18 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        {/* Аязбеков Скандарбек — Соавтор */}
-        <div className="space-y-12 pt-16 border-t border-gray-200">
-          <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Соавтор — Аязбеков Скандарбек</h4>
-
-          <div className="grid gap-12">
-            {[
-              { year: '2010—н.в.', role: 'Профессор', context: 'Кафедра культурологии и философии' },
-              { year: '2003—2010', role: 'Доцент', context: 'Кафедра социально-гуманитарных дисциплин' },
-              { year: '1995—2003', role: 'Старший преподаватель', context: 'Кафедра философии и методологии науки' },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col md:flex-row gap-4 md:gap-16">
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-600 w-32 shrink-0">{item.year}</span>
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-black uppercase tracking-wider">{item.role}</p>
-                  <p className="text-sm text-gray-700 font-normal italic">{item.context}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Link to Co-authors page */}
+        <div className="pt-16 border-t border-gray-200">
+          <Link
+            to="/co-authors"
+            className="group flex items-center justify-between p-6 bg-white border border-gray-100 hover:border-black transition-all"
+          >
+            <div>
+              <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Со-авторы</h4>
+              <p className="text-sm font-serif italic text-black">Информация о со-авторах научных работ и публикаций.</p>
+            </div>
+            <ArrowRight size={16} className="text-gray-400 group-hover:text-black transition-colors" />
+          </Link>
         </div>
       </div>
     </div>

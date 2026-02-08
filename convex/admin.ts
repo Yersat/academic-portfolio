@@ -11,6 +11,8 @@ async function verifyAdmin(ctx: any, sessionToken: string) {
   }
 }
 
+// ---- Books ----
+
 export const createBook = mutation({
   args: {
     sessionToken: v.string(),
@@ -29,7 +31,6 @@ export const createBook = mutation({
     isPublished: v.boolean(),
   },
   handler: async (ctx, args) => {
-    // Verify admin session
     const session = await ctx.db
       .query("adminSessions")
       .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
@@ -38,7 +39,6 @@ export const createBook = mutation({
       throw new Error("Unauthorized");
     }
 
-    // Enforce unique ISBN
     const existing = await ctx.db
       .query("books")
       .withIndex("by_isbn", (q) => q.eq("isbn", args.isbn))
@@ -80,8 +80,6 @@ export const updateBook = mutation({
     }
 
     const { sessionToken, id, ...updates } = args;
-
-    // Filter out undefined values
     const cleanUpdates: Record<string, any> = {};
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
@@ -144,5 +142,182 @@ export const attachPdf = mutation({
     }
 
     await ctx.db.patch(args.bookId, { pdfStorageId: args.storageId });
+  },
+});
+
+// ---- Co-Authors ----
+
+export const createCoAuthor = mutation({
+  args: {
+    sessionToken: v.string(),
+    name: v.string(),
+    title: v.optional(v.string()),
+    bio: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
+    cvEntries: v.array(
+      v.object({
+        year: v.string(),
+        role: v.string(),
+        context: v.string(),
+      })
+    ),
+    sortOrder: v.float64(),
+    status: v.union(v.literal("published"), v.literal("draft")),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const { sessionToken, ...data } = args;
+    return await ctx.db.insert("coAuthors", data);
+  },
+});
+
+export const updateCoAuthor = mutation({
+  args: {
+    sessionToken: v.string(),
+    id: v.id("coAuthors"),
+    name: v.optional(v.string()),
+    title: v.optional(v.string()),
+    bio: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
+    cvEntries: v.optional(
+      v.array(
+        v.object({
+          year: v.string(),
+          role: v.string(),
+          context: v.string(),
+        })
+      )
+    ),
+    sortOrder: v.optional(v.float64()),
+    status: v.optional(v.union(v.literal("published"), v.literal("draft"))),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const { sessionToken, id, ...updates } = args;
+    const cleanUpdates: Record<string, any> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        cleanUpdates[key] = value;
+      }
+    }
+
+    if (Object.keys(cleanUpdates).length > 0) {
+      await ctx.db.patch(id, cleanUpdates);
+    }
+  },
+});
+
+export const deleteCoAuthor = mutation({
+  args: {
+    sessionToken: v.string(),
+    id: v.id("coAuthors"),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.delete(args.id);
+  },
+});
+
+// ---- Gallery Photos ----
+
+export const createGalleryPhoto = mutation({
+  args: {
+    sessionToken: v.string(),
+    title: v.optional(v.string()),
+    description: v.optional(v.string()),
+    imageStorageId: v.id("_storage"),
+    category: v.optional(v.string()),
+    date: v.optional(v.string()),
+    sortOrder: v.float64(),
+    status: v.union(v.literal("published"), v.literal("draft")),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const { sessionToken, ...data } = args;
+    return await ctx.db.insert("galleryPhotos", data);
+  },
+});
+
+export const updateGalleryPhoto = mutation({
+  args: {
+    sessionToken: v.string(),
+    id: v.id("galleryPhotos"),
+    title: v.optional(v.string()),
+    description: v.optional(v.string()),
+    category: v.optional(v.string()),
+    date: v.optional(v.string()),
+    sortOrder: v.optional(v.float64()),
+    status: v.optional(v.union(v.literal("published"), v.literal("draft"))),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const { sessionToken, id, ...updates } = args;
+    const cleanUpdates: Record<string, any> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        cleanUpdates[key] = value;
+      }
+    }
+
+    if (Object.keys(cleanUpdates).length > 0) {
+      await ctx.db.patch(id, cleanUpdates);
+    }
+  },
+});
+
+export const deleteGalleryPhoto = mutation({
+  args: {
+    sessionToken: v.string(),
+    id: v.id("galleryPhotos"),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const photo = await ctx.db.get(args.id);
+    if (photo) {
+      await ctx.storage.delete(photo.imageStorageId);
+    }
+    await ctx.db.delete(args.id);
   },
 });

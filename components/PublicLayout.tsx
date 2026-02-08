@@ -13,28 +13,38 @@ const PublicLayout: React.FC = () => {
   const navItems = [
     { name: 'Главная', path: '/' },
     { name: 'Обо мне', path: '/about' },
+    { name: 'Со-авторы', path: '/co-authors' },
     { name: 'Книги', path: '/books' },
-    { name: 'Лекции', path: '/media' },
-    { name: 'Исследования', path: '/research' },
+    { name: 'Статьи', path: '/articles' },
+    { name: 'Видео', path: '/videos' },
+    { name: 'Фотогаллерея', path: '/gallery' },
     { name: 'Контакты', path: '/contact' },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
 
   const profileTitle = profile?.title || '';
   const profileUniversity = profile?.university || '';
+
+  // Use uploaded photo from Convex storage, fallback to static file
+  const profilePhotoSrc = profile?.profilePhotoUrl || '/profile-sabina.jpg';
+  const coverPhotoSrc = profile?.coverPhotoUrl || '/cover-photo.jpg';
+  const photoPosition = profile?.profilePhotoPosition || 'center';
 
   return (
     <div className="min-h-screen bg-[#fbfaf8] text-[#000000] selection:bg-gray-300">
       {/* Absolute Top Navigation */}
       <nav className="sticky top-0 z-50 bg-[#fbfaf8]/95 backdrop-blur-md border-b border-gray-300 py-4">
-        <div className="max-w-4xl mx-auto px-6 md:px-0 flex justify-center items-center">
-          <div className="hidden md:flex space-x-10">
+        <div className="max-w-5xl mx-auto px-6 md:px-4 flex justify-center items-center">
+          <div className="hidden md:flex space-x-6">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-[11px] uppercase tracking-[0.2em] font-bold transition-all hover:text-black ${
+                className={`text-[10px] uppercase tracking-[0.15em] font-bold transition-all hover:text-black ${
                   isActive(item.path) ? 'text-black border-b-2 border-black' : 'text-gray-700'
                 }`}
               >
@@ -79,7 +89,7 @@ const PublicLayout: React.FC = () => {
         {/* Cover Image */}
         <div className="w-full h-56 md:h-72 overflow-hidden relative bg-gray-900">
           <img
-            src="/cover-photo.jpg"
+            src={coverPhotoSrc}
             alt="Cover"
             className="w-full h-full object-cover opacity-60"
           />
@@ -89,11 +99,12 @@ const PublicLayout: React.FC = () => {
 
         {/* Profile Identity */}
         <div className="max-w-4xl mx-auto px-6 md:px-0 -mt-24 md:-mt-32 relative z-10 flex flex-col items-center">
-          <div className="mb-6">
+          <div className="mb-6 flex justify-center">
             <img
-              src="/profile-sabina.jpg"
+              src={profilePhotoSrc}
               alt="Аязбекова Сабина"
               className="w-36 h-36 md:w-44 md:h-44 rounded-full object-cover shadow-2xl border-[5px] border-[#fbfaf8] bg-white"
+              style={{ objectPosition: photoPosition }}
             />
           </div>
 

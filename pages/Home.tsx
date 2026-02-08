@@ -81,11 +81,11 @@ const Home: React.FC = () => {
 
       {/* Quick Navigation to other sections */}
       <section className="pt-12 border-t border-gray-200 grid grid-cols-2 gap-8">
-        <Link to="/media" className="group p-6 bg-white border border-gray-100 hover:border-black transition-all">
-          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Лекции</h4>
+        <Link to="/videos" className="group p-6 bg-white border border-gray-100 hover:border-black transition-all">
+          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Видео</h4>
           <p className="text-sm font-serif italic text-black">Записи конференций, докладов и публичных выступлений.</p>
         </Link>
-        <Link to="/research" className="group p-6 bg-white border border-gray-100 hover:border-black transition-all">
+        <Link to="/articles" className="group p-6 bg-white border border-gray-100 hover:border-black transition-all">
           <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-black mb-2 transition-colors">Статьи</h4>
           <p className="text-sm font-serif italic text-black">Рецензируемые научные статьи и рабочие материалы.</p>
         </Link>

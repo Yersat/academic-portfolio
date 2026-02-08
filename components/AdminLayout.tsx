@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Book, Video, FileEdit, Settings, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, Book, Video, FileEdit, Settings, LogOut, User, FileText, Users, Image } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -20,7 +20,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
   const navItems = [
     { name: 'Панель', path: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Книги', path: '/admin/books', icon: Book },
-    { name: 'Медиа', path: '/admin/media', icon: Video },
+    { name: 'Статьи', path: '/admin/articles', icon: FileText },
+    { name: 'Видео', path: '/admin/videos', icon: Video },
+    { name: 'Со-авторы', path: '/admin/co-authors', icon: Users },
+    { name: 'Фотогаллерея', path: '/admin/gallery', icon: Image },
     { name: 'Контент сайта', path: '/admin/pages', icon: FileEdit },
   ];
 
@@ -36,7 +39,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
           </h1>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 mt-4">
+        <nav className="flex-1 p-4 space-y-2 mt-4 overflow-y-auto">
           {navItems.map((item) => (
             <Link
               key={item.path}

@@ -6,7 +6,17 @@ import { v } from "convex/values";
 export const getProfile = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("profile").first();
+    const profile = await ctx.db.query("profile").first();
+    if (!profile) return null;
+    let profilePhotoUrl = null;
+    let coverPhotoUrl = null;
+    if (profile.profilePhotoStorageId) {
+      profilePhotoUrl = await ctx.storage.getUrl(profile.profilePhotoStorageId);
+    }
+    if (profile.coverPhotoStorageId) {
+      coverPhotoUrl = await ctx.storage.getUrl(profile.coverPhotoStorageId);
+    }
+    return { ...profile, profilePhotoUrl, coverPhotoUrl };
   },
 });
 
@@ -22,6 +32,9 @@ export const updateProfile = mutation({
     email: v.optional(v.string()),
     location: v.optional(v.string()),
     cvUrl: v.optional(v.string()),
+    profilePhotoPosition: v.optional(v.string()),
+    coverPhotoStorageId: v.optional(v.id("_storage")),
+    profilePhotoStorageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const session = await ctx.db
@@ -177,6 +190,29 @@ export const listAllResearch = query({
   },
 });
 
+export const getResearchById = query({
+  args: { id: v.id("researchPapers") },
+  handler: async (ctx, args) => {
+    const paper = await ctx.db.get(args.id);
+    if (!paper) return null;
+
+    if (paper.contentBlocks) {
+      const resolvedBlocks = await Promise.all(
+        paper.contentBlocks.map(async (block) => {
+          if (block.type === "image" && block.imageStorageId) {
+            const imageUrl = await ctx.storage.getUrl(block.imageStorageId);
+            return { ...block, imageUrl };
+          }
+          return block;
+        })
+      );
+      return { ...paper, contentBlocks: resolvedBlocks };
+    }
+
+    return paper;
+  },
+});
+
 export const createResearch = mutation({
   args: {
     sessionToken: v.string(),
@@ -186,6 +222,23 @@ export const createResearch = mutation({
     authors: v.string(),
     pdfUrl: v.optional(v.string()),
     abstract: v.string(),
+    contentBlocks: v.optional(
+      v.array(
+        v.object({
+          type: v.union(
+            v.literal("paragraph"),
+            v.literal("heading"),
+            v.literal("image"),
+            v.literal("quote")
+          ),
+          text: v.optional(v.string()),
+          imageStorageId: v.optional(v.id("_storage")),
+          imageCaption: v.optional(v.string()),
+          level: v.optional(v.float64()),
+        })
+      )
+    ),
+    coverImageStorageId: v.optional(v.id("_storage")),
     status: v.union(v.literal("published"), v.literal("draft")),
   },
   handler: async (ctx, args) => {
@@ -212,6 +265,23 @@ export const updateResearch = mutation({
     authors: v.optional(v.string()),
     pdfUrl: v.optional(v.string()),
     abstract: v.optional(v.string()),
+    contentBlocks: v.optional(
+      v.array(
+        v.object({
+          type: v.union(
+            v.literal("paragraph"),
+            v.literal("heading"),
+            v.literal("image"),
+            v.literal("quote")
+          ),
+          text: v.optional(v.string()),
+          imageStorageId: v.optional(v.id("_storage")),
+          imageCaption: v.optional(v.string()),
+          level: v.optional(v.float64()),
+        })
+      )
+    ),
+    coverImageStorageId: v.optional(v.id("_storage")),
     status: v.optional(v.union(v.literal("published"), v.literal("draft"))),
   },
   handler: async (ctx, args) => {

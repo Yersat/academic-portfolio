@@ -30,6 +30,15 @@ export interface MediaItem {
   status: 'published' | 'draft';
 }
 
+export interface ContentBlock {
+  type: 'paragraph' | 'heading' | 'image' | 'quote';
+  text?: string;
+  imageStorageId?: string;
+  imageUrl?: string;
+  imageCaption?: string;
+  level?: number;
+}
+
 export interface ResearchPaper {
   _id: string;
   title: string;
@@ -38,6 +47,31 @@ export interface ResearchPaper {
   authors: string;
   pdfUrl?: string;
   abstract: string;
+  status: 'published' | 'draft';
+  contentBlocks?: ContentBlock[];
+  coverImageStorageId?: string;
+}
+
+export interface CoAuthor {
+  _id: string;
+  name: string;
+  title?: string;
+  bio?: string;
+  photoUrl?: string;
+  cvEntries: { year: string; role: string; context: string }[];
+  sortOrder: number;
+  status: 'published' | 'draft';
+}
+
+export interface GalleryPhoto {
+  _id: string;
+  title?: string;
+  description?: string;
+  imageStorageId: string;
+  imageUrl?: string;
+  category?: string;
+  date?: string;
+  sortOrder: number;
   status: 'published' | 'draft';
 }
 
@@ -51,4 +85,9 @@ export interface Profile {
   email: string;
   location: string;
   cvUrl: string;
+  profilePhotoPosition?: string;
+  profilePhotoStorageId?: string;
+  profilePhotoUrl?: string;
+  coverPhotoStorageId?: string;
+  coverPhotoUrl?: string;
 }

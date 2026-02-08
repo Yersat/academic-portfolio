@@ -68,6 +68,9 @@ export default defineSchema({
     email: v.string(),
     location: v.string(),
     cvUrl: v.string(),
+    profilePhotoPosition: v.optional(v.string()),
+    coverPhotoStorageId: v.optional(v.id("_storage")),
+    profilePhotoStorageId: v.optional(v.id("_storage")),
   }),
 
   mediaItems: defineTable({
@@ -92,6 +95,51 @@ export default defineSchema({
     authors: v.string(),
     pdfUrl: v.optional(v.string()),
     abstract: v.string(),
+    contentBlocks: v.optional(
+      v.array(
+        v.object({
+          type: v.union(
+            v.literal("paragraph"),
+            v.literal("heading"),
+            v.literal("image"),
+            v.literal("quote")
+          ),
+          text: v.optional(v.string()),
+          imageStorageId: v.optional(v.id("_storage")),
+          imageCaption: v.optional(v.string()),
+          level: v.optional(v.float64()),
+        })
+      )
+    ),
+    coverImageStorageId: v.optional(v.id("_storage")),
+    status: v.union(v.literal("published"), v.literal("draft")),
+  })
+    .index("by_status", ["status"])
+    .index("by_year", ["year"]),
+
+  coAuthors: defineTable({
+    name: v.string(),
+    title: v.optional(v.string()),
+    bio: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
+    cvEntries: v.array(
+      v.object({
+        year: v.string(),
+        role: v.string(),
+        context: v.string(),
+      })
+    ),
+    sortOrder: v.float64(),
+    status: v.union(v.literal("published"), v.literal("draft")),
+  }).index("by_status", ["status"]),
+
+  galleryPhotos: defineTable({
+    title: v.optional(v.string()),
+    description: v.optional(v.string()),
+    imageStorageId: v.id("_storage"),
+    category: v.optional(v.string()),
+    date: v.optional(v.string()),
+    sortOrder: v.float64(),
     status: v.union(v.literal("published"), v.literal("draft")),
   }).index("by_status", ["status"]),
 });
