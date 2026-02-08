@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
-import { Download, ArrowRight } from 'lucide-react';
+import { Download, ArrowRight, ExternalLink } from 'lucide-react';
 
 const About: React.FC = () => {
   const profile = useQuery(api.profile.getProfile);
@@ -18,48 +18,80 @@ const About: React.FC = () => {
   return (
     <div className="space-y-24 animate-fade-in max-w-2xl mx-auto">
       <header className="space-y-6 text-center">
-        <h1 className="text-4xl font-serif font-bold italic text-black">Обо мне</h1>
+        <h1 className="text-4xl font-serif font-bold italic text-black">Автор</h1>
       </header>
 
       <div className="space-y-20">
-        <section className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-          <p className="text-xl leading-relaxed text-black font-bold italic mb-10">
-             Научная деятельность в области культурологии, философии и искусствоведения.
-          </p>
-          <p>
-            {profile.extendedBio}
-          </p>
+        {/* 1. Биография */}
+        <section className="space-y-8">
+          <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Биография</h4>
+          <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+            <p>{profile.extendedBio}</p>
+          </div>
+          {profile.cvUrl && (
+            <div className="pt-4">
+              <a
+                href={profile.cvUrl}
+                className="inline-flex items-center gap-4 text-[11px] font-bold uppercase tracking-[0.2em] text-black border-b-2 border-black pb-2 hover:text-gray-600 hover:border-gray-400 transition-all"
+              >
+                <Download size={14} /> Скачать CV (PDF)
+              </a>
+            </div>
+          )}
         </section>
 
-        {/* Аязбекова Сабина CV */}
-        <div className="space-y-12 pt-16 border-t border-gray-200">
-          <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Curriculum Vitae</h4>
+        {/* 2. Список публикаций */}
+        {profile.publications && (
+          <section className="space-y-8 pt-16 border-t border-gray-200">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Список публикаций</h4>
+            <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+              <p className="whitespace-pre-wrap">{profile.publications}</p>
+            </div>
+          </section>
+        )}
 
-          <div className="grid gap-12">
-            {[
-              { year: '2012—н.в.', role: 'Профессор', context: 'Кафедра искусствоведения и культурологии' },
-              { year: '2005—2012', role: 'Доцент', context: 'Кафедра теории и истории культуры' },
-              { year: '1998—2005', role: 'Старший преподаватель', context: 'Кафедра музыковедения и культурологии' },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col md:flex-row gap-4 md:gap-16">
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-600 w-32 shrink-0">{item.year}</span>
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-black uppercase tracking-wider">{item.role}</p>
-                  <p className="text-sm text-gray-700 font-normal italic">{item.context}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* 3. Научные направления */}
+        {profile.researchDirections && (
+          <section className="space-y-8 pt-16 border-t border-gray-200">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Научные направления</h4>
+            <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+              <p className="whitespace-pre-wrap">{profile.researchDirections}</p>
+            </div>
+          </section>
+        )}
 
-          <div className="pt-12">
-            <a
-              href={profile.cvUrl}
-              className="inline-flex items-center gap-4 text-[11px] font-bold uppercase tracking-[0.2em] text-black border-b-2 border-black pb-2 hover:text-gray-600 hover:border-gray-400 transition-all"
-            >
-              <Download size={14} /> Скачать PDF версию
-            </a>
-          </div>
-        </div>
+        {/* 4. Индексация и профили */}
+        {profile.indexingProfiles && profile.indexingProfiles.length > 0 && (
+          <section className="space-y-8 pt-16 border-t border-gray-200">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Индексация и профили</h4>
+            <div className="space-y-4">
+              {profile.indexingProfiles.map((item, i) => (
+                <a
+                  key={i}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 group"
+                >
+                  <ExternalLink size={14} className="text-gray-400 group-hover:text-black transition-colors shrink-0" />
+                  <span className="text-sm font-bold text-black group-hover:text-gray-600 transition-colors border-b border-transparent group-hover:border-gray-400">
+                    {item.name}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 5. Награды и признание */}
+        {profile.awards && (
+          <section className="space-y-8 pt-16 border-t border-gray-200">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Награды и признание</h4>
+            <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+              <p className="whitespace-pre-wrap">{profile.awards}</p>
+            </div>
+          </section>
+        )}
 
         {/* Link to Co-authors page */}
         <div className="pt-16 border-t border-gray-200">

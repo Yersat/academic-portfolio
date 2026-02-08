@@ -4,12 +4,6 @@ import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { Plus, Edit3, Trash2, X, FileX, Users } from 'lucide-react';
 
-interface CvEntry {
-  year: string;
-  role: string;
-  context: string;
-}
-
 interface CoAuthorFormData {
   name: string;
   title: string;
@@ -17,6 +11,9 @@ interface CoAuthorFormData {
   photoUrl: string;
   sortOrder: string;
   status: 'published' | 'draft';
+  publications: string;
+  researchDirections: string;
+  awards: string;
 }
 
 const emptyFormData: CoAuthorFormData = {
@@ -26,6 +23,9 @@ const emptyFormData: CoAuthorFormData = {
   photoUrl: '',
   sortOrder: '0',
   status: 'draft',
+  publications: '',
+  researchDirections: '',
+  awards: '',
 };
 
 const AdminCoAuthors: React.FC = () => {
@@ -37,7 +37,7 @@ const AdminCoAuthors: React.FC = () => {
   const [editingId, setEditingId] = useState<Id<"coAuthors"> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<CoAuthorFormData>(emptyFormData);
-  const [cvEntries, setCvEntries] = useState<CvEntry[]>([]);
+  const [indexingProfiles, setIndexingProfiles] = useState<{ name: string; url: string }[]>([]);
 
   const sessionToken = localStorage.getItem('admin_session_token') || '';
 
@@ -56,21 +56,18 @@ const AdminCoAuthors: React.FC = () => {
       photoUrl: author.photoUrl || '',
       sortOrder: author.sortOrder?.toString() || '0',
       status: author.status,
+      publications: author.publications || '',
+      researchDirections: author.researchDirections || '',
+      awards: author.awards || '',
     });
-    setCvEntries(
-      (author.cvEntries || []).map((entry: any) => ({
-        year: entry.year,
-        role: entry.role,
-        context: entry.context,
-      }))
-    );
+    setIndexingProfiles(author.indexingProfiles || []);
     setIsModalOpen(true);
   };
 
   const handleCreate = () => {
     setEditingId(null);
     setFormData(emptyFormData);
-    setCvEntries([]);
+    setIndexingProfiles([]);
     setIsModalOpen(true);
   };
 
@@ -83,7 +80,11 @@ const AdminCoAuthors: React.FC = () => {
         title: formData.title || undefined,
         bio: formData.bio || undefined,
         photoUrl: formData.photoUrl || undefined,
-        cvEntries,
+        cvEntries: [],
+        publications: formData.publications || undefined,
+        researchDirections: formData.researchDirections || undefined,
+        indexingProfiles: indexingProfiles.length > 0 ? indexingProfiles : undefined,
+        awards: formData.awards || undefined,
         sortOrder: parseFloat(formData.sortOrder) || 0,
         status: formData.status,
       });
@@ -94,7 +95,11 @@ const AdminCoAuthors: React.FC = () => {
         title: formData.title || undefined,
         bio: formData.bio || undefined,
         photoUrl: formData.photoUrl || undefined,
-        cvEntries,
+        cvEntries: [],
+        publications: formData.publications || undefined,
+        researchDirections: formData.researchDirections || undefined,
+        indexingProfiles: indexingProfiles.length > 0 ? indexingProfiles : undefined,
+        awards: formData.awards || undefined,
         sortOrder: parseFloat(formData.sortOrder) || 0,
         status: formData.status,
       });
@@ -103,21 +108,21 @@ const AdminCoAuthors: React.FC = () => {
     setIsModalOpen(false);
     setEditingId(null);
     setFormData(emptyFormData);
-    setCvEntries([]);
+    setIndexingProfiles([]);
   };
 
-  const addCvEntry = () => {
-    setCvEntries([...cvEntries, { year: '', role: '', context: '' }]);
+  const addIndexingProfile = () => {
+    setIndexingProfiles([...indexingProfiles, { name: '', url: '' }]);
   };
 
-  const updateCvEntry = (index: number, field: keyof CvEntry, value: string) => {
-    const updated = [...cvEntries];
+  const removeIndexingProfile = (index: number) => {
+    setIndexingProfiles(indexingProfiles.filter((_, i) => i !== index));
+  };
+
+  const updateIndexingProfile = (index: number, field: 'name' | 'url', value: string) => {
+    const updated = [...indexingProfiles];
     updated[index] = { ...updated[index], [field]: value };
-    setCvEntries(updated);
-  };
-
-  const removeCvEntry = (index: number) => {
-    setCvEntries(cvEntries.filter((_, i) => i !== index));
+    setIndexingProfiles(updated);
   };
 
   if (coAuthors === undefined) {
@@ -297,41 +302,56 @@ const AdminCoAuthors: React.FC = () => {
                 </div>
               </div>
 
-              {/* CV Entries Sub-Editor */}
+              {/* Список публикаций */}
               <div className="border-t border-gray-100 pt-6">
-                <h3 className="text-sm font-bold text-gray-900 mb-4">Записи в CV</h3>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Список публикаций</label>
+                <textarea
+                  value={formData.publications}
+                  onChange={(e) => setFormData({ ...formData, publications: e.target.value })}
+                  rows={6}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
+                />
+              </div>
+
+              {/* Научные направления */}
+              <div className="border-t border-gray-100 pt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Научные направления</label>
+                <textarea
+                  value={formData.researchDirections}
+                  onChange={(e) => setFormData({ ...formData, researchDirections: e.target.value })}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
+                />
+              </div>
+
+              {/* Индексация и профили */}
+              <div className="border-t border-gray-100 pt-6">
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Индексация и профили</h3>
 
                 <div className="space-y-3 mb-4">
-                  {cvEntries.map((entry, index) => (
+                  {indexingProfiles.map((profile, index) => (
                     <div
                       key={index}
                       className="flex items-start gap-2 border border-gray-200 rounded-lg p-3 bg-gray-50"
                     >
-                      <div className="flex-1 grid grid-cols-3 gap-2">
+                      <div className="flex-1 grid grid-cols-2 gap-2">
                         <input
                           type="text"
-                          value={entry.year}
-                          onChange={(e) => updateCvEntry(index, 'year', e.target.value)}
+                          value={profile.name}
+                          onChange={(e) => updateIndexingProfile(index, 'name', e.target.value)}
                           className="px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none text-sm"
-                          placeholder="Год"
+                          placeholder="Название, напр. Scopus"
                         />
                         <input
                           type="text"
-                          value={entry.role}
-                          onChange={(e) => updateCvEntry(index, 'role', e.target.value)}
+                          value={profile.url}
+                          onChange={(e) => updateIndexingProfile(index, 'url', e.target.value)}
                           className="px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none text-sm"
-                          placeholder="Роль"
-                        />
-                        <input
-                          type="text"
-                          value={entry.context}
-                          onChange={(e) => updateCvEntry(index, 'context', e.target.value)}
-                          className="px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none text-sm"
-                          placeholder="Контекст"
+                          placeholder="URL"
                         />
                       </div>
                       <button
-                        onClick={() => removeCvEntry(index)}
+                        onClick={() => removeIndexingProfile(index)}
                         className="p-2 text-slate-400 hover:text-red-600 flex-shrink-0"
                       >
                         <X size={16} />
@@ -341,11 +361,22 @@ const AdminCoAuthors: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={addCvEntry}
+                  onClick={addIndexingProfile}
                   className="flex items-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium"
                 >
-                  <Plus size={16} /> Добавить запись
+                  <Plus size={16} /> Добавить профиль
                 </button>
+              </div>
+
+              {/* Награды и признание */}
+              <div className="border-t border-gray-100 pt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Награды и признание</label>
+                <textarea
+                  value={formData.awards}
+                  onChange={(e) => setFormData({ ...formData, awards: e.target.value })}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
+                />
               </div>
             </div>
 

@@ -53,6 +53,8 @@ const AdminArticles: React.FC = () => {
   const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
   const [newBlockType, setNewBlockType] = useState<ContentBlock['type']>('paragraph');
   const [isUploading, setIsUploading] = useState(false);
+  const [fileStorageId, setFileStorageId] = useState<string | null>(null);
+  const [isFileUploading, setIsFileUploading] = useState(false);
 
   const sessionToken = localStorage.getItem('admin_session_token') || '';
 
@@ -82,6 +84,7 @@ const AdminArticles: React.FC = () => {
         level: block.level,
       }))
     );
+    setFileStorageId(article.fileStorageId || null);
     setIsModalOpen(true);
   };
 
@@ -89,6 +92,7 @@ const AdminArticles: React.FC = () => {
     setEditingId(null);
     setFormData(emptyFormData);
     setContentBlocks([]);
+    setFileStorageId(null);
     setIsModalOpen(true);
   };
 
@@ -112,6 +116,7 @@ const AdminArticles: React.FC = () => {
         authors: formData.authors,
         abstract: formData.abstract,
         pdfUrl: formData.pdfUrl || undefined,
+        fileStorageId: fileStorageId || undefined,
         contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
         status: formData.status,
       });
@@ -124,6 +129,7 @@ const AdminArticles: React.FC = () => {
         authors: formData.authors,
         abstract: formData.abstract,
         pdfUrl: formData.pdfUrl || undefined,
+        fileStorageId: fileStorageId || undefined,
         contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
         status: formData.status,
       });
@@ -183,6 +189,23 @@ const AdminArticles: React.FC = () => {
       console.error('Upload failed:', err);
     }
     setIsUploading(false);
+  };
+
+  const handleFileUpload = async (file: File) => {
+    setIsFileUploading(true);
+    try {
+      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const result = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      const { storageId } = await result.json();
+      setFileStorageId(storageId);
+    } catch (err) {
+      console.error('File upload failed:', err);
+    }
+    setIsFileUploading(false);
   };
 
   const getBlockPreview = (block: ContentBlock): string => {
@@ -377,6 +400,29 @@ const AdminArticles: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
                     placeholder="https://..."
                   />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Прикрепить файл (PDF/DOC)</label>
+                  <div className="flex items-center gap-3">
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file);
+                        }}
+                        disabled={isFileUploading}
+                      />
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 cursor-pointer font-medium">
+                        <Upload size={14} /> {isFileUploading ? 'Загрузка...' : 'Загрузить файл'}
+                      </span>
+                    </label>
+                    {fileStorageId && (
+                      <span className="text-xs text-emerald-600 font-bold">✓ Файл прикреплён</span>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Статус</label>

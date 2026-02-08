@@ -2,6 +2,7 @@
 import React from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
+import { ExternalLink } from 'lucide-react';
 
 const CoAuthors: React.FC = () => {
   const coAuthors = useQuery(api.coAuthors.listPublished);
@@ -65,37 +66,67 @@ const CoAuthors: React.FC = () => {
               </div>
             </div>
 
-            {/* Bio */}
+            {/* 1. Биография */}
             {coAuthor.bio && (
-              <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-                <p>{coAuthor.bio}</p>
-              </div>
+              <section className="space-y-4">
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Биография</h4>
+                <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+                  <p>{coAuthor.bio}</p>
+                </div>
+              </section>
             )}
 
-            {/* CV Timeline */}
-            {coAuthor.cvEntries && coAuthor.cvEntries.length > 0 && (
-              <div className="space-y-8">
-                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
-                  Curriculum Vitae
-                </h4>
-                <div className="grid gap-12">
-                  {coAuthor.cvEntries.map((entry, i) => (
-                    <div key={i} className="flex flex-col md:flex-row gap-4 md:gap-16">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-600 w-32 shrink-0">
-                        {entry.year}
+            {/* 2. Список публикаций */}
+            {coAuthor.publications && (
+              <section className="space-y-4">
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Список публикаций</h4>
+                <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+                  <p className="whitespace-pre-wrap">{coAuthor.publications}</p>
+                </div>
+              </section>
+            )}
+
+            {/* 3. Научные направления */}
+            {coAuthor.researchDirections && (
+              <section className="space-y-4">
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Научные направления</h4>
+                <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+                  <p className="whitespace-pre-wrap">{coAuthor.researchDirections}</p>
+                </div>
+              </section>
+            )}
+
+            {/* 4. Индексация и профили */}
+            {coAuthor.indexingProfiles && coAuthor.indexingProfiles.length > 0 && (
+              <section className="space-y-4">
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Индексация и профили</h4>
+                <div className="space-y-3">
+                  {coAuthor.indexingProfiles.map((item, i) => (
+                    <a
+                      key={i}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 group"
+                    >
+                      <ExternalLink size={14} className="text-gray-400 group-hover:text-black transition-colors shrink-0" />
+                      <span className="text-sm font-bold text-black group-hover:text-gray-600 transition-colors border-b border-transparent group-hover:border-gray-400">
+                        {item.name}
                       </span>
-                      <div className="space-y-1">
-                        <p className="text-sm font-bold text-black uppercase tracking-wider">
-                          {entry.role}
-                        </p>
-                        <p className="text-sm text-gray-700 font-normal italic">
-                          {entry.context}
-                        </p>
-                      </div>
-                    </div>
+                    </a>
                   ))}
                 </div>
-              </div>
+              </section>
+            )}
+
+            {/* 5. Награды и признание */}
+            {coAuthor.awards && (
+              <section className="space-y-4">
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Награды и признание</h4>
+                <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
+                  <p className="whitespace-pre-wrap">{coAuthor.awards}</p>
+                </div>
+              </section>
             )}
           </div>
         ))}

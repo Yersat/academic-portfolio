@@ -50,6 +50,8 @@ export interface ResearchPaper {
   status: 'published' | 'draft';
   contentBlocks?: ContentBlock[];
   coverImageStorageId?: string;
+  fileStorageId?: string;
+  fileUrl?: string;
 }
 
 export interface CoAuthor {
@@ -59,6 +61,10 @@ export interface CoAuthor {
   bio?: string;
   photoUrl?: string;
   cvEntries: { year: string; role: string; context: string }[];
+  publications?: string;
+  researchDirections?: string;
+  indexingProfiles?: { name: string; url: string }[];
+  awards?: string;
   sortOrder: number;
   status: 'published' | 'draft';
 }
@@ -85,6 +91,10 @@ export interface Profile {
   email: string;
   location: string;
   cvUrl: string;
+  publications?: string;
+  researchDirections?: string;
+  indexingProfiles?: { name: string; url: string }[];
+  awards?: string;
   profilePhotoPosition?: string;
   profilePhotoStorageId?: string;
   profilePhotoUrl?: string;

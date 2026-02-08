@@ -125,17 +125,29 @@ const ArticleDetail: React.FC = () => {
         </section>
       )}
 
-      {/* PDF Download */}
-      {paper.pdfUrl && (
-        <div className="pt-8 border-t border-gray-200">
-          <a
-            href={paper.pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-black border-b-2 border-black pb-2 hover:text-gray-600 hover:border-gray-400 transition-all"
-          >
-            <FileText size={14} /> Скачать PDF
-          </a>
+      {/* File Download */}
+      {((paper as any).fileUrl || paper.pdfUrl) && (
+        <div className="pt-8 border-t border-gray-200 flex flex-wrap gap-6">
+          {(paper as any).fileUrl && (
+            <a
+              href={(paper as any).fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-black border-b-2 border-black pb-2 hover:text-gray-600 hover:border-gray-400 transition-all"
+            >
+              <FileText size={14} /> Скачать файл
+            </a>
+          )}
+          {paper.pdfUrl && (
+            <a
+              href={paper.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-black border-b-2 border-black pb-2 hover:text-gray-600 hover:border-gray-400 transition-all"
+            >
+              <FileText size={14} /> Скачать PDF
+            </a>
+          )}
         </div>
       )}
     </div>

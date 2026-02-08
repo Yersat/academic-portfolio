@@ -161,6 +161,12 @@ export const createCoAuthor = mutation({
         context: v.string(),
       })
     ),
+    publications: v.optional(v.string()),
+    researchDirections: v.optional(v.string()),
+    indexingProfiles: v.optional(
+      v.array(v.object({ name: v.string(), url: v.string() }))
+    ),
+    awards: v.optional(v.string()),
     sortOrder: v.float64(),
     status: v.union(v.literal("published"), v.literal("draft")),
   },
@@ -195,6 +201,12 @@ export const updateCoAuthor = mutation({
         })
       )
     ),
+    publications: v.optional(v.string()),
+    researchDirections: v.optional(v.string()),
+    indexingProfiles: v.optional(
+      v.array(v.object({ name: v.string(), url: v.string() }))
+    ),
+    awards: v.optional(v.string()),
     sortOrder: v.optional(v.float64()),
     status: v.optional(v.union(v.literal("published"), v.literal("draft"))),
   },

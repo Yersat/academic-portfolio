@@ -68,6 +68,12 @@ export default defineSchema({
     email: v.string(),
     location: v.string(),
     cvUrl: v.string(),
+    publications: v.optional(v.string()),
+    researchDirections: v.optional(v.string()),
+    indexingProfiles: v.optional(
+      v.array(v.object({ name: v.string(), url: v.string() }))
+    ),
+    awards: v.optional(v.string()),
     profilePhotoPosition: v.optional(v.string()),
     coverPhotoStorageId: v.optional(v.id("_storage")),
     profilePhotoStorageId: v.optional(v.id("_storage")),
@@ -112,6 +118,7 @@ export default defineSchema({
       )
     ),
     coverImageStorageId: v.optional(v.id("_storage")),
+    fileStorageId: v.optional(v.id("_storage")),
     status: v.union(v.literal("published"), v.literal("draft")),
   })
     .index("by_status", ["status"])
@@ -129,6 +136,12 @@ export default defineSchema({
         context: v.string(),
       })
     ),
+    publications: v.optional(v.string()),
+    researchDirections: v.optional(v.string()),
+    indexingProfiles: v.optional(
+      v.array(v.object({ name: v.string(), url: v.string() }))
+    ),
+    awards: v.optional(v.string()),
     sortOrder: v.float64(),
     status: v.union(v.literal("published"), v.literal("draft")),
   }).index("by_status", ["status"]),

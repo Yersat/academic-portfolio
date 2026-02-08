@@ -32,6 +32,12 @@ export const updateProfile = mutation({
     email: v.optional(v.string()),
     location: v.optional(v.string()),
     cvUrl: v.optional(v.string()),
+    publications: v.optional(v.string()),
+    researchDirections: v.optional(v.string()),
+    indexingProfiles: v.optional(
+      v.array(v.object({ name: v.string(), url: v.string() }))
+    ),
+    awards: v.optional(v.string()),
     profilePhotoPosition: v.optional(v.string()),
     coverPhotoStorageId: v.optional(v.id("_storage")),
     profilePhotoStorageId: v.optional(v.id("_storage")),
@@ -196,6 +202,11 @@ export const getResearchById = query({
     const paper = await ctx.db.get(args.id);
     if (!paper) return null;
 
+    let fileUrl = null;
+    if (paper.fileStorageId) {
+      fileUrl = await ctx.storage.getUrl(paper.fileStorageId);
+    }
+
     if (paper.contentBlocks) {
       const resolvedBlocks = await Promise.all(
         paper.contentBlocks.map(async (block) => {
@@ -206,10 +217,10 @@ export const getResearchById = query({
           return block;
         })
       );
-      return { ...paper, contentBlocks: resolvedBlocks };
+      return { ...paper, contentBlocks: resolvedBlocks, fileUrl };
     }
 
-    return paper;
+    return { ...paper, fileUrl };
   },
 });
 
@@ -239,6 +250,7 @@ export const createResearch = mutation({
       )
     ),
     coverImageStorageId: v.optional(v.id("_storage")),
+    fileStorageId: v.optional(v.id("_storage")),
     status: v.union(v.literal("published"), v.literal("draft")),
   },
   handler: async (ctx, args) => {
@@ -282,6 +294,7 @@ export const updateResearch = mutation({
       )
     ),
     coverImageStorageId: v.optional(v.id("_storage")),
+    fileStorageId: v.optional(v.id("_storage")),
     status: v.optional(v.union(v.literal("published"), v.literal("draft"))),
   },
   handler: async (ctx, args) => {

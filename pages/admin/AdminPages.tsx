@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import { Save, User, Globe, FileText, Info, Image, Upload } from 'lucide-react';
+import { Save, User, Globe, FileText, Info, Image, Upload, Plus, X } from 'lucide-react';
 
 const AdminPages: React.FC = () => {
   const profileData = useQuery(api.profile.getProfile);
@@ -19,6 +19,10 @@ const AdminPages: React.FC = () => {
     university: '',
     location: '',
     profilePhotoPosition: 'center',
+    publications: '',
+    researchDirections: '',
+    indexingProfiles: [] as { name: string; url: string }[],
+    awards: '',
   });
   const [activeTab, setActiveTab] = useState<'profile' | 'about' | 'contact' | 'photos'>('profile');
   const [uploading, setUploading] = useState(false);
@@ -34,6 +38,10 @@ const AdminPages: React.FC = () => {
         university: profileData.university,
         location: profileData.location,
         profilePhotoPosition: profileData.profilePhotoPosition || 'center',
+        publications: profileData.publications || '',
+        researchDirections: profileData.researchDirections || '',
+        indexingProfiles: profileData.indexingProfiles || [],
+        awards: profileData.awards || '',
       });
     }
   }, [profileData]);
@@ -49,6 +57,10 @@ const AdminPages: React.FC = () => {
       university: profile.university,
       location: profile.location,
       profilePhotoPosition: profile.profilePhotoPosition,
+      publications: profile.publications || undefined,
+      researchDirections: profile.researchDirections || undefined,
+      indexingProfiles: profile.indexingProfiles.length > 0 ? profile.indexingProfiles : undefined,
+      awards: profile.awards || undefined,
     });
     alert('Содержание сайта успешно обновлено.');
   };
@@ -71,6 +83,26 @@ const AdminPages: React.FC = () => {
       alert('Ошибка загрузки');
     }
     setUploading(false);
+  };
+
+  const addIndexingProfile = () => {
+    setProfile({
+      ...profile,
+      indexingProfiles: [...profile.indexingProfiles, { name: '', url: '' }],
+    });
+  };
+
+  const removeIndexingProfile = (index: number) => {
+    setProfile({
+      ...profile,
+      indexingProfiles: profile.indexingProfiles.filter((_, i) => i !== index),
+    });
+  };
+
+  const updateIndexingProfile = (index: number, field: 'name' | 'url', value: string) => {
+    const updated = [...profile.indexingProfiles];
+    updated[index] = { ...updated[index], [field]: value };
+    setProfile({ ...profile, indexingProfiles: updated });
   };
 
   if (profileData === undefined) {
@@ -161,6 +193,81 @@ const AdminPages: React.FC = () => {
                 onChange={e => setProfile({...profile, extendedBio: e.target.value})}
               />
             </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Список публикаций</label>
+              <textarea
+                rows={8}
+                className="w-full px-4 py-4 border border-slate-200 rounded-md focus:border-blue-600 outline-none font-serif text-lg leading-relaxed"
+                value={profile.publications}
+                placeholder="Введите список публикаций..."
+                onChange={e => setProfile({...profile, publications: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Научные направления</label>
+              <textarea
+                rows={5}
+                className="w-full px-4 py-4 border border-slate-200 rounded-md focus:border-blue-600 outline-none font-serif text-lg leading-relaxed"
+                value={profile.researchDirections}
+                placeholder="Введите научные направления..."
+                onChange={e => setProfile({...profile, researchDirections: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Индексация и профили</label>
+                <button
+                  type="button"
+                  onClick={addIndexingProfile}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-wider rounded-md hover:bg-blue-100 transition-all"
+                >
+                  <Plus size={14} /> Добавить профиль
+                </button>
+              </div>
+              {profile.indexingProfiles.length === 0 && (
+                <p className="text-[10px] text-slate-400 italic">Нет добавленных профилей. Нажмите "Добавить профиль" чтобы начать.</p>
+              )}
+              {profile.indexingProfiles.map((entry, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    className="flex-1 px-4 py-2 border border-slate-200 rounded-md focus:border-blue-600 outline-none"
+                    placeholder="Название, напр. Scopus"
+                    value={entry.name}
+                    onChange={e => updateIndexingProfile(index, 'name', e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    className="flex-1 px-4 py-2 border border-slate-200 rounded-md focus:border-blue-600 outline-none"
+                    placeholder="URL"
+                    value={entry.url}
+                    onChange={e => updateIndexingProfile(index, 'url', e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeIndexingProfile(index)}
+                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Награды и признание</label>
+              <textarea
+                rows={6}
+                className="w-full px-4 py-4 border border-slate-200 rounded-md focus:border-blue-600 outline-none font-serif text-lg leading-relaxed"
+                value={profile.awards}
+                placeholder="Введите информацию о наградах..."
+                onChange={e => setProfile({...profile, awards: e.target.value})}
+              />
+            </div>
+
             <div className="p-4 bg-slate-50 border border-slate-100 rounded-md flex gap-4">
                <div className="w-10 h-10 bg-white border border-slate-200 rounded-md flex items-center justify-center text-slate-400">
                  <FileText size={20} />

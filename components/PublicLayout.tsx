@@ -12,7 +12,7 @@ const PublicLayout: React.FC = () => {
 
   const navItems = [
     { name: 'Главная', path: '/' },
-    { name: 'Обо мне', path: '/about' },
+    { name: 'Автор', path: '/about' },
     { name: 'Со-авторы', path: '/co-authors' },
     { name: 'Книги', path: '/books' },
     { name: 'Статьи', path: '/articles' },
