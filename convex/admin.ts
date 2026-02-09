@@ -145,6 +145,71 @@ export const attachPdf = mutation({
   },
 });
 
+// ---- Book Preview Pages ----
+
+export const createPreviewPage = mutation({
+  args: {
+    sessionToken: v.string(),
+    bookId: v.id("books"),
+    imageStorageId: v.id("_storage"),
+    sortOrder: v.float64(),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const { sessionToken, ...pageData } = args;
+    return await ctx.db.insert("bookPreviewPages", pageData);
+  },
+});
+
+export const deletePreviewPage = mutation({
+  args: {
+    sessionToken: v.string(),
+    id: v.id("bookPreviewPages"),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const page = await ctx.db.get(args.id);
+    if (page) {
+      await ctx.storage.delete(page.imageStorageId);
+    }
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const reorderPreviewPages = mutation({
+  args: {
+    sessionToken: v.string(),
+    pageIds: v.array(v.id("bookPreviewPages")),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    for (let i = 0; i < args.pageIds.length; i++) {
+      await ctx.db.patch(args.pageIds[i], { sortOrder: i });
+    }
+  },
+});
+
 // ---- Co-Authors ----
 
 export const createCoAuthor = mutation({

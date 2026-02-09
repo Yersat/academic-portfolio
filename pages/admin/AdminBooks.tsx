@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
-import { Plus, Search, Filter, Edit3, Trash2, Globe, FileX, X, ExternalLink, FileText, Upload } from 'lucide-react';
+import { Plus, Search, Filter, Edit3, Trash2, Globe, FileX, X, ExternalLink, FileText, Upload, Image, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface BookFormData {
   title: string;
@@ -40,12 +40,16 @@ const AdminBooks: React.FC = () => {
   const deleteBook = useMutation(api.admin.deleteBook);
   const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
   const attachPdf = useMutation(api.admin.attachPdf);
+  const createPreviewPage = useMutation(api.admin.createPreviewPage);
+  const deletePreviewPage = useMutation(api.admin.deletePreviewPage);
+  const reorderPreviewPages = useMutation(api.admin.reorderPreviewPages);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [editingBookId, setEditingBookId] = useState<Id<"books"> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<BookFormData>(emptyFormData);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingPreview, setIsUploadingPreview] = useState(false);
 
   const sessionToken = localStorage.getItem('admin_session_token') || '';
 
@@ -135,6 +139,53 @@ const AdminBooks: React.FC = () => {
       console.error('Upload failed:', err);
     }
     setIsUploading(false);
+  };
+
+  const previewPages = useQuery(
+    api.books.getPreviewPages,
+    editingBookId ? { bookId: editingBookId } : "skip"
+  );
+
+  const handlePreviewUpload = async (file: File) => {
+    if (!editingBookId) return;
+    setIsUploadingPreview(true);
+    try {
+      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const result = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      const { storageId } = await result.json();
+      const nextOrder = (previewPages?.length ?? 0);
+      await createPreviewPage({
+        sessionToken,
+        bookId: editingBookId,
+        imageStorageId: storageId,
+        sortOrder: nextOrder,
+      });
+    } catch (err) {
+      console.error('Preview upload failed:', err);
+    }
+    setIsUploadingPreview(false);
+  };
+
+  const handleDeletePreviewPage = async (pageId: Id<"bookPreviewPages">) => {
+    if (window.confirm('Удалить эту страницу предпросмотра?')) {
+      await deletePreviewPage({ sessionToken, id: pageId });
+    }
+  };
+
+  const handleMovePreviewPage = async (index: number, direction: 'up' | 'down') => {
+    if (!previewPages) return;
+    const newOrder = [...previewPages];
+    const swapIndex = direction === 'up' ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= newOrder.length) return;
+    [newOrder[index], newOrder[swapIndex]] = [newOrder[swapIndex], newOrder[index]];
+    await reorderPreviewPages({
+      sessionToken,
+      pageIds: newOrder.map((p) => p._id),
+    });
   };
 
   const filteredBooks = (books || []).filter(b =>
@@ -434,6 +485,90 @@ const AdminBooks: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Preview Pages */}
+              {editingBookId && (
+                <div className="border-t border-gray-100 pt-6">
+                  <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Image size={16} /> Предпросмотр книги
+                  </h3>
+
+                  {/* Existing preview pages */}
+                  {previewPages && previewPages.length > 0 && (
+                    <div className="space-y-2 mb-4">
+                      {previewPages.map((page, index) => (
+                        <div
+                          key={page._id}
+                          className="flex items-center gap-3 p-2 bg-gray-50 rounded-md border border-gray-100"
+                        >
+                          <span className="text-xs text-gray-400 font-mono w-6 text-center">{index + 1}</span>
+                          {page.imageUrl && (
+                            <img
+                              src={page.imageUrl}
+                              alt=""
+                              className="w-10 h-14 object-cover rounded shadow-sm"
+                            />
+                          )}
+                          <span className="flex-1 text-xs text-gray-600">
+                            Страница {index + 1}
+                          </span>
+                          <div className="flex gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleMovePreviewPage(index, 'up')}
+                              disabled={index === 0}
+                              className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ArrowUp size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMovePreviewPage(index, 'down')}
+                              disabled={index === previewPages.length - 1}
+                              className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ArrowDown size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeletePreviewPage(page._id)}
+                              className="p-1 text-gray-400 hover:text-red-600"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Upload button */}
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      multiple
+                      onChange={async (e) => {
+                        const files = e.target.files;
+                        if (!files) return;
+                        for (let i = 0; i < files.length; i++) {
+                          await handlePreviewUpload(files[i]);
+                        }
+                        e.target.value = '';
+                      }}
+                      disabled={isUploadingPreview}
+                    />
+                    <span className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-md text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                      <Upload size={14} />
+                      {isUploadingPreview ? 'Загрузка...' : 'Добавить страницы'}
+                    </span>
+                  </label>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Загрузите изображения страниц для предпросмотра (JPG, PNG). Порядок можно изменить стрелками.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Footer */}

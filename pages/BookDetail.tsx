@@ -6,6 +6,7 @@ import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import { ArrowLeft, ShoppingCart, Share2, Info, FileText, ExternalLink } from 'lucide-react';
 import PdfCheckoutModal from '../components/PdfCheckoutModal';
+import BookPreview from '../components/BookPreview';
 
 const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -106,6 +107,9 @@ const BookDetail: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* Book Preview */}
+          <BookPreview bookId={book._id} />
         </div>
 
         {/* Content Column */}

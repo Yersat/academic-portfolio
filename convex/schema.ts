@@ -21,6 +21,12 @@ export default defineSchema({
     .index("by_isbn", ["isbn"])
     .index("by_isPublished", ["isPublished"]),
 
+  bookPreviewPages: defineTable({
+    bookId: v.id("books"),
+    imageStorageId: v.id("_storage"),
+    sortOrder: v.float64(),
+  }).index("by_bookId", ["bookId"]),
+
   orders: defineTable({
     bookId: v.id("books"),
     email: v.string(),
