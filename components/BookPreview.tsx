@@ -107,7 +107,7 @@ const BookPreview: React.FC<BookPreviewProps> = ({ bookId }) => {
 
   // Fullscreen dimensions
   const fsPortrait = fullscreenSize.width < 768;
-  const fsPageHeight = Math.floor(fullscreenSize.height * 0.78);
+  const fsPageHeight = Math.floor(fullscreenSize.height * 0.60);
   const fsPageWidth = Math.floor(fsPageHeight / 1.414);
 
   const validPages = previewPages?.filter((p) => p.imageUrl) ?? [];
@@ -222,25 +222,25 @@ const BookPreview: React.FC<BookPreviewProps> = ({ bookId }) => {
       {/* Fullscreen Overlay */}
       {isFullscreen && validPages.length > 0 && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center"
+          className="fixed inset-0 z-50 bg-black/90 flex flex-col"
           onContextMenu={(e) => e.preventDefault()}
           style={{ userSelect: 'none' }}
         >
-          {/* Close button */}
-          <button
-            onClick={() => setIsFullscreen(false)}
-            className="absolute top-4 right-4 z-50 p-3 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-colors"
-          >
-            <X size={24} />
-          </button>
-
-          {/* Label */}
-          <div className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
-            Фрагмент книги (предпросмотр)
+          {/* Top bar — always visible */}
+          <div className="w-full flex items-center justify-between px-6 py-4 flex-shrink-0">
+            <span className="text-white/60 text-sm font-bold uppercase tracking-widest">
+              Фрагмент книги (предпросмотр)
+            </span>
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors text-sm font-bold"
+            >
+              Закрыть <X size={20} />
+            </button>
           </div>
 
           {/* Fullscreen Page Flip */}
-          <div className="flex-1 flex items-center justify-center w-full">
+          <div className="flex-1 flex items-center justify-center w-full min-h-0">
             {fullscreenSize.width > 0 && (
               <HTMLFlipBook
                 ref={fullscreenFlipBookRef}
@@ -276,25 +276,30 @@ const BookPreview: React.FC<BookPreviewProps> = ({ bookId }) => {
             )}
           </div>
 
-          {/* Fullscreen Navigation */}
-          <div className="flex items-center justify-center gap-8 py-4">
-            <button
-              onClick={() => goToPrev(fullscreenFlipBookRef)}
-              disabled={currentPage === 0}
-              className="p-3 text-white/60 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft size={28} />
-            </button>
-            <span className="text-sm text-white/60 font-medium tabular-nums">
-              {currentPage + 1} / {totalPages}
-            </span>
-            <button
-              onClick={() => goToNext(fullscreenFlipBookRef)}
-              disabled={currentPage >= totalPages - 1}
-              className="p-3 text-white/60 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronRight size={28} />
-            </button>
+          {/* Fullscreen Navigation + Hints */}
+          <div className="flex flex-col items-center pb-6 flex-shrink-0">
+            <div className="flex items-center justify-center gap-8 py-3">
+              <button
+                onClick={() => goToPrev(fullscreenFlipBookRef)}
+                disabled={currentPage === 0}
+                className="p-3 text-white/60 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft size={28} />
+              </button>
+              <span className="text-sm text-white/60 font-medium tabular-nums">
+                {currentPage + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => goToNext(fullscreenFlipBookRef)}
+                disabled={currentPage >= totalPages - 1}
+                className="p-3 text-white/60 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight size={28} />
+              </button>
+            </div>
+            <p className="text-white/40 text-xs">
+              Листайте страницы стрелками &middot; Нажмите &laquo;Закрыть&raquo; или клавишу Esc для выхода
+            </p>
           </div>
         </div>
       )}

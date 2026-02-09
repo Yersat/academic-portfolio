@@ -51,11 +51,11 @@ const AdminBooks: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingPreview, setIsUploadingPreview] = useState(false);
 
-  const sessionToken = localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => localStorage.getItem('admin_session_token') || '';
 
   const handleDelete = async (id: Id<"books">) => {
     if (window.confirm('Вы уверены, что хотите удалить эту книгу? Это действие необратимо.')) {
-      await deleteBook({ sessionToken, id });
+      await deleteBook({ sessionToken: getSessionToken(), id });
     }
   };
 
@@ -86,7 +86,7 @@ const AdminBooks: React.FC = () => {
   const handleSave = async () => {
     if (editingBookId) {
       await updateBook({
-        sessionToken,
+        sessionToken: getSessionToken(),
         id: editingBookId,
         title: formData.title,
         year: formData.year,
@@ -103,7 +103,7 @@ const AdminBooks: React.FC = () => {
       });
     } else {
       await createBook({
-        sessionToken,
+        sessionToken: getSessionToken(),
         title: formData.title,
         year: formData.year,
         publisher: formData.publisher,
@@ -127,14 +127,14 @@ const AdminBooks: React.FC = () => {
   const handlePdfUpload = async (bookId: Id<"books">, file: File) => {
     setIsUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
         body: file,
       });
       const { storageId } = await result.json();
-      await attachPdf({ sessionToken, bookId, storageId });
+      await attachPdf({ sessionToken: getSessionToken(), bookId, storageId });
     } catch (err) {
       console.error('Upload failed:', err);
     }
@@ -150,7 +150,7 @@ const AdminBooks: React.FC = () => {
     if (!editingBookId) return;
     setIsUploadingPreview(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
@@ -159,7 +159,7 @@ const AdminBooks: React.FC = () => {
       const { storageId } = await result.json();
       const nextOrder = (previewPages?.length ?? 0);
       await createPreviewPage({
-        sessionToken,
+        sessionToken: getSessionToken(),
         bookId: editingBookId,
         imageStorageId: storageId,
         sortOrder: nextOrder,
@@ -172,7 +172,7 @@ const AdminBooks: React.FC = () => {
 
   const handleDeletePreviewPage = async (pageId: Id<"bookPreviewPages">) => {
     if (window.confirm('Удалить эту страницу предпросмотра?')) {
-      await deletePreviewPage({ sessionToken, id: pageId });
+      await deletePreviewPage({ sessionToken: getSessionToken(), id: pageId });
     }
   };
 
@@ -183,7 +183,7 @@ const AdminBooks: React.FC = () => {
     if (swapIndex < 0 || swapIndex >= newOrder.length) return;
     [newOrder[index], newOrder[swapIndex]] = [newOrder[swapIndex], newOrder[index]];
     await reorderPreviewPages({
-      sessionToken,
+      sessionToken: getSessionToken(),
       pageIds: newOrder.map((p) => p._id),
     });
   };

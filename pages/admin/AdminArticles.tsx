@@ -56,11 +56,11 @@ const AdminArticles: React.FC = () => {
   const [fileStorageId, setFileStorageId] = useState<Id<"_storage"> | null>(null);
   const [isFileUploading, setIsFileUploading] = useState(false);
 
-  const sessionToken = localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => localStorage.getItem('admin_session_token') || '';
 
   const handleDelete = async (id: Id<"researchPapers">) => {
     if (window.confirm('Вы уверены, что хотите удалить эту статью? Это действие необратимо.')) {
-      await deleteResearch({ sessionToken, id });
+      await deleteResearch({ sessionToken: getSessionToken(), id });
     }
   };
 
@@ -108,7 +108,7 @@ const AdminArticles: React.FC = () => {
 
     if (editingId) {
       await updateResearch({
-        sessionToken,
+        sessionToken: getSessionToken(),
         id: editingId,
         title: formData.title,
         year: formData.year,
@@ -122,7 +122,7 @@ const AdminArticles: React.FC = () => {
       });
     } else {
       await createResearch({
-        sessionToken,
+        sessionToken: getSessionToken(),
         title: formData.title,
         year: formData.year,
         journal: formData.journal || undefined,
@@ -177,7 +177,7 @@ const AdminArticles: React.FC = () => {
   const handleImageUpload = async (index: number, file: File) => {
     setIsUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
@@ -185,8 +185,9 @@ const AdminArticles: React.FC = () => {
       });
       const { storageId } = await result.json();
       updateBlock(index, { imageStorageId: storageId });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Upload failed:', err);
+      alert(`Ошибка загрузки изображения: ${err.message || 'Попробуйте ещё раз.'}`);
     }
     setIsUploading(false);
   };
@@ -194,7 +195,7 @@ const AdminArticles: React.FC = () => {
   const handleFileUpload = async (file: File) => {
     setIsFileUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
@@ -202,9 +203,9 @@ const AdminArticles: React.FC = () => {
       });
       const { storageId } = await result.json();
       setFileStorageId(storageId as Id<"_storage">);
-    } catch (err) {
+    } catch (err: any) {
       console.error('File upload failed:', err);
-      alert('Ошибка загрузки файла. Попробуйте ещё раз.');
+      alert(`Ошибка загрузки файла: ${err.message || 'Попробуйте ещё раз.'}`);
     }
     setIsFileUploading(false);
   };
