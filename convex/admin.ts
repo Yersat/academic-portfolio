@@ -114,12 +114,18 @@ export const deleteBook = mutation({
 export const generateUploadUrl = mutation({
   args: { sessionToken: v.string() },
   handler: async (ctx, args) => {
+    if (!args.sessionToken) {
+      throw new Error("Session token is empty");
+    }
     const session = await ctx.db
       .query("adminSessions")
       .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
       .first();
-    if (!session || session.expiresAt < Date.now()) {
-      throw new Error("Unauthorized");
+    if (!session) {
+      throw new Error("Session not found");
+    }
+    if (session.expiresAt < Date.now()) {
+      throw new Error("Session expired");
     }
 
     return await ctx.storage.generateUploadUrl();

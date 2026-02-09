@@ -42,11 +42,17 @@ const AdminVideos: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<VideoFormData>(emptyFormData);
 
-  const sessionToken = localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => {
+    const token = localStorage.getItem('admin_session_token');
+    if (!token) {
+      throw new Error('Сессия не найдена. Пожалуйста, войдите заново.');
+    }
+    return token;
+  };
 
   const handleDelete = async (id: Id<"mediaItems">) => {
     if (window.confirm('Вы уверены, что хотите удалить это видео? Это действие необратимо.')) {
-      await deleteMedia({ sessionToken, id });
+      await deleteMedia({ sessionToken: getSessionToken(), id });
     }
   };
 
@@ -78,7 +84,7 @@ const AdminVideos: React.FC = () => {
 
     if (editingId) {
       await updateMedia({
-        sessionToken,
+        sessionToken: getSessionToken(),
         id: editingId,
         title: formData.title,
         date: formData.date,
@@ -90,7 +96,7 @@ const AdminVideos: React.FC = () => {
       });
     } else {
       await createMedia({
-        sessionToken,
+        sessionToken: getSessionToken(),
         title: formData.title,
         date: formData.date,
         type: formData.type,

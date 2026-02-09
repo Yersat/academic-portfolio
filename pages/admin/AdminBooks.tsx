@@ -51,7 +51,13 @@ const AdminBooks: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingPreview, setIsUploadingPreview] = useState(false);
 
-  const getSessionToken = () => localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => {
+    const token = localStorage.getItem('admin_session_token');
+    if (!token) {
+      throw new Error('Сессия не найдена. Пожалуйста, войдите заново.');
+    }
+    return token;
+  };
 
   const handleDelete = async (id: Id<"books">) => {
     if (window.confirm('Вы уверены, что хотите удалить эту книгу? Это действие необратимо.')) {

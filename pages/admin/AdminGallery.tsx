@@ -53,11 +53,17 @@ const AdminGallery: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const sessionToken = localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => {
+    const token = localStorage.getItem('admin_session_token');
+    if (!token) {
+      throw new Error('Сессия не найдена. Пожалуйста, войдите заново.');
+    }
+    return token;
+  };
 
   const handleDelete = async (id: Id<"galleryPhotos">) => {
     if (window.confirm('Вы уверены, что хотите удалить это фото? Это действие необратимо.')) {
-      await deleteGalleryPhoto({ sessionToken, id });
+      await deleteGalleryPhoto({ sessionToken: getSessionToken(), id });
     }
   };
 
@@ -85,7 +91,7 @@ const AdminGallery: React.FC = () => {
 
     setIsUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': selectedFile.type },
@@ -94,7 +100,7 @@ const AdminGallery: React.FC = () => {
       const { storageId } = await result.json();
 
       await createGalleryPhoto({
-        sessionToken,
+        sessionToken: getSessionToken(),
         imageStorageId: storageId,
         title: uploadFormData.title || undefined,
         description: uploadFormData.description || undefined,
@@ -117,7 +123,7 @@ const AdminGallery: React.FC = () => {
     if (!editingId) return;
 
     await updateGalleryPhoto({
-      sessionToken,
+      sessionToken: getSessionToken(),
       id: editingId,
       title: editFormData.title || undefined,
       description: editFormData.description || undefined,

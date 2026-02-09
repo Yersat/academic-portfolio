@@ -8,11 +8,17 @@ import { Plus, Video, Trash2, Edit3, Link2 } from 'lucide-react';
 const AdminMedia: React.FC = () => {
   const media = useQuery(api.profile.listAllMedia);
   const deleteMedia = useMutation(api.profile.deleteMedia);
-  const sessionToken = localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => {
+    const token = localStorage.getItem('admin_session_token');
+    if (!token) {
+      throw new Error('Сессия не найдена. Пожалуйста, войдите заново.');
+    }
+    return token;
+  };
 
   const handleDelete = async (id: Id<"mediaItems">) => {
     if (window.confirm('Вы уверены, что хотите удалить этот элемент?')) {
-      await deleteMedia({ sessionToken, id });
+      await deleteMedia({ sessionToken: getSessionToken(), id });
     }
   };
 

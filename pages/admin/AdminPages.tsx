@@ -8,7 +8,13 @@ const AdminPages: React.FC = () => {
   const profileData = useQuery(api.profile.getProfile);
   const updateProfile = useMutation(api.profile.updateProfile);
   const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
-  const sessionToken = localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => {
+    const token = localStorage.getItem('admin_session_token');
+    if (!token) {
+      throw new Error('Сессия не найдена. Пожалуйста, войдите заново.');
+    }
+    return token;
+  };
 
   const [profile, setProfile] = useState({
     name: '',
@@ -48,7 +54,7 @@ const AdminPages: React.FC = () => {
 
   const handleSave = async () => {
     await updateProfile({
-      sessionToken,
+      sessionToken: getSessionToken(),
       name: profile.name,
       title: profile.title,
       bio: profile.bio,
@@ -70,13 +76,13 @@ const AdminPages: React.FC = () => {
     if (!file) return;
     setUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken });
+      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
       const result = await fetch(uploadUrl, { method: 'POST', body: file });
       const { storageId } = await result.json();
       if (type === 'profile') {
-        await updateProfile({ sessionToken, profilePhotoStorageId: storageId });
+        await updateProfile({ sessionToken: getSessionToken(), profilePhotoStorageId: storageId });
       } else {
-        await updateProfile({ sessionToken, coverPhotoStorageId: storageId });
+        await updateProfile({ sessionToken: getSessionToken(), coverPhotoStorageId: storageId });
       }
       alert(type === 'profile' ? 'Фото профиля обновлено' : 'Обложка обновлена');
     } catch (err) {

@@ -39,11 +39,17 @@ const AdminCoAuthors: React.FC = () => {
   const [formData, setFormData] = useState<CoAuthorFormData>(emptyFormData);
   const [indexingProfiles, setIndexingProfiles] = useState<{ name: string; url: string }[]>([]);
 
-  const sessionToken = localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => {
+    const token = localStorage.getItem('admin_session_token');
+    if (!token) {
+      throw new Error('Сессия не найдена. Пожалуйста, войдите заново.');
+    }
+    return token;
+  };
 
   const handleDelete = async (id: Id<"coAuthors">) => {
     if (window.confirm('Вы уверены, что хотите удалить этого соавтора? Это действие необратимо.')) {
-      await deleteCoAuthor({ sessionToken, id });
+      await deleteCoAuthor({ sessionToken: getSessionToken(), id });
     }
   };
 
@@ -74,7 +80,7 @@ const AdminCoAuthors: React.FC = () => {
   const handleSave = async () => {
     if (editingId) {
       await updateCoAuthor({
-        sessionToken,
+        sessionToken: getSessionToken(),
         id: editingId,
         name: formData.name,
         title: formData.title || undefined,
@@ -90,7 +96,7 @@ const AdminCoAuthors: React.FC = () => {
       });
     } else {
       await createCoAuthor({
-        sessionToken,
+        sessionToken: getSessionToken(),
         name: formData.name,
         title: formData.title || undefined,
         bio: formData.bio || undefined,

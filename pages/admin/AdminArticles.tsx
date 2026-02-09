@@ -56,7 +56,13 @@ const AdminArticles: React.FC = () => {
   const [fileStorageId, setFileStorageId] = useState<Id<"_storage"> | null>(null);
   const [isFileUploading, setIsFileUploading] = useState(false);
 
-  const getSessionToken = () => localStorage.getItem('admin_session_token') || '';
+  const getSessionToken = () => {
+    const token = localStorage.getItem('admin_session_token');
+    if (!token) {
+      throw new Error('Сессия не найдена. Пожалуйста, войдите заново.');
+    }
+    return token;
+  };
 
   const handleDelete = async (id: Id<"researchPapers">) => {
     if (window.confirm('Вы уверены, что хотите удалить эту статью? Это действие необратимо.')) {
@@ -187,7 +193,13 @@ const AdminArticles: React.FC = () => {
       updateBlock(index, { imageStorageId: storageId });
     } catch (err: any) {
       console.error('Upload failed:', err);
-      alert(`Ошибка загрузки изображения: ${err.message || 'Попробуйте ещё раз.'}`);
+      if (err.message?.includes('Unauthorized') || err.message?.includes('not found') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, выйдите и войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+      } else {
+        alert(`Ошибка загрузки изображения: ${err.message || 'Попробуйте ещё раз.'}`);
+      }
     }
     setIsUploading(false);
   };
@@ -195,7 +207,8 @@ const AdminArticles: React.FC = () => {
   const handleFileUpload = async (file: File) => {
     setIsFileUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
+      const token = getSessionToken();
+      const uploadUrl = await generateUploadUrl({ sessionToken: token });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
@@ -205,7 +218,13 @@ const AdminArticles: React.FC = () => {
       setFileStorageId(storageId as Id<"_storage">);
     } catch (err: any) {
       console.error('File upload failed:', err);
-      alert(`Ошибка загрузки файла: ${err.message || 'Попробуйте ещё раз.'}`);
+      if (err.message?.includes('Unauthorized') || err.message?.includes('not found') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, выйдите и войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+      } else {
+        alert(`Ошибка загрузки файла: ${err.message || 'Попробуйте ещё раз.'}`);
+      }
     }
     setIsFileUploading(false);
   };
