@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
-import { Plus, Edit3, Trash2, X, FileX, Users } from 'lucide-react';
+import { Plus, Edit3, Trash2, X, FileX, Users, Upload } from 'lucide-react';
 
 interface CoAuthorFormData {
   name: string;
   title: string;
   bio: string;
-  photoUrl: string;
   sortOrder: string;
   status: 'published' | 'draft';
   publications: string;
@@ -20,7 +19,6 @@ const emptyFormData: CoAuthorFormData = {
   name: '',
   title: '',
   bio: '',
-  photoUrl: '',
   sortOrder: '0',
   status: 'draft',
   publications: '',
@@ -33,11 +31,16 @@ const AdminCoAuthors: React.FC = () => {
   const createCoAuthor = useMutation(api.admin.createCoAuthor);
   const updateCoAuthor = useMutation(api.admin.updateCoAuthor);
   const deleteCoAuthor = useMutation(api.admin.deleteCoAuthor);
+  const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
+  const checkSession = useMutation(api.auth.checkSession);
 
   const [editingId, setEditingId] = useState<Id<"coAuthors"> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<CoAuthorFormData>(emptyFormData);
   const [indexingProfiles, setIndexingProfiles] = useState<{ name: string; url: string }[]>([]);
+  const [photoStorageId, setPhotoStorageId] = useState<Id<"_storage"> | null>(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
 
   const getSessionToken = () => {
     const token = localStorage.getItem('admin_session_token');
@@ -59,7 +62,6 @@ const AdminCoAuthors: React.FC = () => {
       name: author.name,
       title: author.title || '',
       bio: author.bio || '',
-      photoUrl: author.photoUrl || '',
       sortOrder: author.sortOrder?.toString() || '0',
       status: author.status,
       publications: author.publications || '',
@@ -67,6 +69,8 @@ const AdminCoAuthors: React.FC = () => {
       awards: author.awards || '',
     });
     setIndexingProfiles(author.indexingProfiles || []);
+    setPhotoStorageId(author.photoStorageId || null);
+    setPhotoPreviewUrl(author.photoUrl || null);
     setIsModalOpen(true);
   };
 
@@ -74,7 +78,42 @@ const AdminCoAuthors: React.FC = () => {
     setEditingId(null);
     setFormData(emptyFormData);
     setIndexingProfiles([]);
+    setPhotoStorageId(null);
+    setPhotoPreviewUrl(null);
     setIsModalOpen(true);
+  };
+
+  const handlePhotoUpload = async (file: File) => {
+    setIsPhotoUploading(true);
+    try {
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
+      const uploadUrl = await generateUploadUrl({ sessionToken: token });
+      const result = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      const { storageId } = await result.json();
+      setPhotoStorageId(storageId as Id<"_storage">);
+      setPhotoPreviewUrl(URL.createObjectURL(file));
+    } catch (err: any) {
+      console.error('Photo upload failed:', err);
+      if (err.message?.includes('Server Error') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+      } else {
+        alert(`Ошибка загрузки фото: ${err.message || 'Попробуйте ещё раз.'}`);
+      }
+    }
+    setIsPhotoUploading(false);
   };
 
   const handleSave = async () => {
@@ -85,7 +124,7 @@ const AdminCoAuthors: React.FC = () => {
         name: formData.name,
         title: formData.title || undefined,
         bio: formData.bio || undefined,
-        photoUrl: formData.photoUrl || undefined,
+        photoStorageId: photoStorageId || undefined,
         cvEntries: [],
         publications: formData.publications || undefined,
         researchDirections: formData.researchDirections || undefined,
@@ -100,7 +139,7 @@ const AdminCoAuthors: React.FC = () => {
         name: formData.name,
         title: formData.title || undefined,
         bio: formData.bio || undefined,
-        photoUrl: formData.photoUrl || undefined,
+        photoStorageId: photoStorageId || undefined,
         cvEntries: [],
         publications: formData.publications || undefined,
         researchDirections: formData.researchDirections || undefined,
@@ -115,6 +154,8 @@ const AdminCoAuthors: React.FC = () => {
     setEditingId(null);
     setFormData(emptyFormData);
     setIndexingProfiles([]);
+    setPhotoStorageId(null);
+    setPhotoPreviewUrl(null);
   };
 
   const addIndexingProfile = () => {
@@ -170,11 +211,11 @@ const AdminCoAuthors: React.FC = () => {
                   {author.photoUrl ? (
                     <img
                       src={author.photoUrl}
-                      className="w-12 h-12 rounded-full object-cover"
+                      className="w-12 h-16 rounded-md object-cover"
                       alt=""
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-16 bg-blue-50 rounded-md flex items-center justify-center">
                       <Users size={20} className="text-blue-400" />
                     </div>
                   )}
@@ -271,14 +312,38 @@ const AdminCoAuthors: React.FC = () => {
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL фото</label>
-                  <input
-                    type="text"
-                    value={formData.photoUrl}
-                    onChange={(e) => setFormData({ ...formData, photoUrl: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
-                    placeholder="https://..."
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Фото</label>
+                  <div className="flex items-center gap-4">
+                    {photoPreviewUrl ? (
+                      <img
+                        src={photoPreviewUrl}
+                        alt="Фото соавтора"
+                        className="w-20 h-24 rounded-md object-cover border border-gray-200"
+                      />
+                    ) : (
+                      <div className="w-20 h-24 bg-gray-100 rounded-md flex items-center justify-center border border-gray-200">
+                        <Users size={24} className="text-gray-300" />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handlePhotoUpload(file);
+                          }}
+                          disabled={isPhotoUploading}
+                        />
+                        <span className="inline-flex items-center gap-2 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 cursor-pointer font-medium">
+                          <Upload size={14} /> {isPhotoUploading ? 'Загрузка...' : 'Загрузить фото'}
+                        </span>
+                      </label>
+                      <p className="text-[10px] text-gray-400">JPG, PNG. Рекомендуемый размер: 300x400 px</p>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Порядок сортировки</label>

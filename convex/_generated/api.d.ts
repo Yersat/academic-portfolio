@@ -21,6 +21,7 @@ import type * as httpHandlers from "../httpHandlers.js";
 import type * as orders from "../orders.js";
 import type * as profile from "../profile.js";
 import type * as seed from "../seed.js";
+import type * as textbooks from "../textbooks.js";
 
 import type {
   ApiFromModules,
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   orders: typeof orders;
   profile: typeof profile;
   seed: typeof seed;
+  textbooks: typeof textbooks;
 }>;
 
 /**

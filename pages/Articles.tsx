@@ -5,9 +5,17 @@ import { api } from '../convex/_generated/api';
 import { Link } from 'react-router-dom';
 import { FileText } from 'lucide-react';
 
+const categoryLabels: Record<string, string> = {
+  reviewed_journals: 'Статьи в рецензируемых научных журналах',
+  collections: 'Статьи в сборниках',
+  conferences: 'Материалы межд. научных конференций, форумов и конгрессов',
+  media_interviews: 'Интервью и статьи в СМИ',
+};
+
 const Articles: React.FC = () => {
   const research = useQuery(api.profile.listResearch);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const years = useMemo(() => {
     if (!research) return [];
@@ -18,11 +26,26 @@ const Articles: React.FC = () => {
     return Array.from(yearSet).sort((a, b) => b.localeCompare(a));
   }, [research]);
 
+  const categories = useMemo(() => {
+    if (!research) return [];
+    const catSet = new Set<string>();
+    research.forEach(paper => {
+      if ((paper as any).category) catSet.add((paper as any).category);
+    });
+    return Array.from(catSet);
+  }, [research]);
+
   const filteredResearch = useMemo(() => {
     if (!research) return [];
-    if (selectedYear === null) return research;
-    return research.filter(paper => paper.year === selectedYear);
-  }, [research, selectedYear]);
+    let filtered = research;
+    if (selectedYear !== null) {
+      filtered = filtered.filter(paper => paper.year === selectedYear);
+    }
+    if (selectedCategory !== null) {
+      filtered = filtered.filter(paper => (paper as any).category === selectedCategory);
+    }
+    return filtered;
+  }, [research, selectedYear, selectedCategory]);
 
   if (research === undefined) {
     return <div className="text-center py-20 text-gray-400">Загрузка...</div>;
@@ -30,6 +53,38 @@ const Articles: React.FC = () => {
 
   const YearFilterButtons = ({ className }: { className?: string }) => (
     <div className={className}>
+      {/* Category filter */}
+      {categories.length > 0 && (
+        <>
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-300 px-3 pt-1 pb-2">Категория</p>
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={`block w-full text-left text-[11px] font-bold uppercase tracking-[0.2em] px-3 py-2 transition-colors ${
+              selectedCategory === null
+                ? 'text-black border-l-2 border-black'
+                : 'text-gray-400 hover:text-black border-l-2 border-transparent'
+            }`}
+          >
+            Все категории
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`block w-full text-left text-[11px] font-bold tracking-[0.1em] px-3 py-2 transition-colors ${
+                selectedCategory === cat
+                  ? 'text-black border-l-2 border-black'
+                  : 'text-gray-400 hover:text-black border-l-2 border-transparent'
+              }`}
+            >
+              {categoryLabels[cat] || cat}
+            </button>
+          ))}
+          <div className="my-4 border-t border-gray-200"></div>
+        </>
+      )}
+      {/* Year filter */}
+      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-300 px-3 pt-1 pb-2">Год</p>
       <button
         onClick={() => setSelectedYear(null)}
         className={`block w-full text-left text-[11px] font-bold uppercase tracking-[0.2em] px-3 py-2 transition-colors ${
@@ -38,7 +93,7 @@ const Articles: React.FC = () => {
             : 'text-gray-400 hover:text-black border-l-2 border-transparent'
         }`}
       >
-        Все
+        Все годы
       </button>
       {years.map(year => (
         <button
@@ -57,30 +112,59 @@ const Articles: React.FC = () => {
   );
 
   const MobileYearFilter = () => (
-    <div className="flex overflow-x-auto gap-3 pb-2 md:hidden">
-      <button
-        onClick={() => setSelectedYear(null)}
-        className={`text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-2 border whitespace-nowrap transition-colors ${
-          selectedYear === null
-            ? 'bg-black text-white border-black'
-            : 'bg-transparent text-gray-600 border-gray-300 hover:border-gray-600 hover:text-black'
-        }`}
-      >
-        Все
-      </button>
-      {years.map(year => (
+    <div className="md:hidden space-y-3">
+      {categories.length > 0 && (
+        <div className="flex overflow-x-auto gap-2 pb-2">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={`text-[10px] font-bold uppercase tracking-[0.15em] px-3 py-1.5 border whitespace-nowrap transition-colors ${
+              selectedCategory === null
+                ? 'bg-black text-white border-black'
+                : 'bg-transparent text-gray-600 border-gray-300 hover:border-gray-600 hover:text-black'
+            }`}
+          >
+            Все категории
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`text-[10px] font-bold tracking-[0.1em] px-3 py-1.5 border whitespace-nowrap transition-colors ${
+                selectedCategory === cat
+                  ? 'bg-black text-white border-black'
+                  : 'bg-transparent text-gray-600 border-gray-300 hover:border-gray-600 hover:text-black'
+              }`}
+            >
+              {categoryLabels[cat] || cat}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="flex overflow-x-auto gap-3 pb-2">
         <button
-          key={year}
-          onClick={() => setSelectedYear(year)}
+          onClick={() => setSelectedYear(null)}
           className={`text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-2 border whitespace-nowrap transition-colors ${
-            selectedYear === year
+            selectedYear === null
               ? 'bg-black text-white border-black'
               : 'bg-transparent text-gray-600 border-gray-300 hover:border-gray-600 hover:text-black'
           }`}
         >
-          {year}
+          Все годы
         </button>
-      ))}
+        {years.map(year => (
+          <button
+            key={year}
+            onClick={() => setSelectedYear(year)}
+            className={`text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-2 border whitespace-nowrap transition-colors ${
+              selectedYear === year
+                ? 'bg-black text-white border-black'
+                : 'bg-transparent text-gray-600 border-gray-300 hover:border-gray-600 hover:text-black'
+            }`}
+          >
+            {year}
+          </button>
+        ))}
+      </div>
     </div>
   );
 
@@ -112,7 +196,7 @@ const Articles: React.FC = () => {
               <article className="space-y-4">
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600">
-                    {paper.year}{paper.journal ? ` \u2022 ${paper.journal}` : ''}
+                    {paper.year}{paper.journal ? ` \u2022 ${paper.journal}` : ''}{(paper as any).category ? ` \u2022 ${categoryLabels[(paper as any).category] || ''}` : ''}
                   </span>
                   <h2 className="text-2xl font-serif font-bold text-black leading-tight group-hover:underline underline-offset-4 decoration-1">
                     {paper.title}

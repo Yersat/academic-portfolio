@@ -15,6 +15,7 @@ const PublicLayout: React.FC = () => {
     { name: 'Автор', path: '/about' },
     { name: 'Со-авторы', path: '/co-authors' },
     { name: 'Книги', path: '/books' },
+    { name: 'Уч. издания', path: '/textbooks' },
     { name: 'Статьи', path: '/articles' },
     { name: 'Видео', path: '/videos' },
     { name: 'Фотогаллерея', path: '/gallery' },

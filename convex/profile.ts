@@ -233,6 +233,16 @@ export const createResearch = mutation({
     authors: v.string(),
     pdfUrl: v.optional(v.string()),
     abstract: v.string(),
+    category: v.optional(
+      v.union(
+        v.literal("reviewed_journals"),
+        v.literal("collections"),
+        v.literal("conferences"),
+        v.literal("media_interviews")
+      )
+    ),
+    pages: v.optional(v.string()),
+    issueNumber: v.optional(v.string()),
     contentBlocks: v.optional(
       v.array(
         v.object({
@@ -277,6 +287,16 @@ export const updateResearch = mutation({
     authors: v.optional(v.string()),
     pdfUrl: v.optional(v.string()),
     abstract: v.optional(v.string()),
+    category: v.optional(
+      v.union(
+        v.literal("reviewed_journals"),
+        v.literal("collections"),
+        v.literal("conferences"),
+        v.literal("media_interviews")
+      )
+    ),
+    pages: v.optional(v.string()),
+    issueNumber: v.optional(v.string()),
     contentBlocks: v.optional(
       v.array(
         v.object({

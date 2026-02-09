@@ -105,9 +105,12 @@ const BookPreview: React.FC<BookPreviewProps> = ({ bookId }) => {
   const pageWidth = Math.min(containerWidth > 0 ? Math.floor(containerWidth / 2) - 4 : 300, 500);
   const pageHeight = Math.floor(pageWidth * 1.414);
 
-  // Fullscreen dimensions
+  // Fullscreen dimensions — constrained by BOTH height and width
   const fsPortrait = fullscreenSize.width < 768;
-  const fsPageHeight = Math.floor(fullscreenSize.height * 0.60);
+  const maxFromHeight = Math.floor(fullscreenSize.height * 0.55);
+  const maxSpreadWidth = fullscreenSize.width * 0.85;
+  const maxFromWidth = Math.floor((maxSpreadWidth / 2) * 1.414);
+  const fsPageHeight = Math.min(maxFromHeight, maxFromWidth);
   const fsPageWidth = Math.floor(fsPageHeight / 1.414);
 
   const validPages = previewPages?.filter((p) => p.imageUrl) ?? [];
@@ -227,7 +230,7 @@ const BookPreview: React.FC<BookPreviewProps> = ({ bookId }) => {
           style={{ userSelect: 'none' }}
         >
           {/* Top bar — always visible */}
-          <div className="w-full flex items-center justify-between px-6 py-4 flex-shrink-0">
+          <div className="w-full flex items-center justify-between px-6 py-4 flex-shrink-0 z-10 relative">
             <span className="text-white/60 text-sm font-bold uppercase tracking-widest">
               Фрагмент книги (предпросмотр)
             </span>
@@ -248,9 +251,9 @@ const BookPreview: React.FC<BookPreviewProps> = ({ bookId }) => {
                 height={fsPageHeight}
                 size="stretch"
                 minWidth={250}
-                maxWidth={800}
+                maxWidth={700}
                 minHeight={354}
-                maxHeight={1132}
+                maxHeight={1000}
                 showCover={true}
                 usePortrait={fsPortrait}
                 drawShadow={true}

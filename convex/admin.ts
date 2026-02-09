@@ -225,6 +225,7 @@ export const createCoAuthor = mutation({
     title: v.optional(v.string()),
     bio: v.optional(v.string()),
     photoUrl: v.optional(v.string()),
+    photoStorageId: v.optional(v.id("_storage")),
     cvEntries: v.array(
       v.object({
         year: v.string(),
@@ -263,6 +264,7 @@ export const updateCoAuthor = mutation({
     title: v.optional(v.string()),
     bio: v.optional(v.string()),
     photoUrl: v.optional(v.string()),
+    photoStorageId: v.optional(v.id("_storage")),
     cvEntries: v.optional(
       v.array(
         v.object({
@@ -401,6 +403,94 @@ export const deleteGalleryPhoto = mutation({
     if (photo) {
       await ctx.storage.delete(photo.imageStorageId);
     }
+    await ctx.db.delete(args.id);
+  },
+});
+
+// ---- Textbooks ----
+
+export const createTextbook = mutation({
+  args: {
+    sessionToken: v.string(),
+    title: v.string(),
+    year: v.string(),
+    publisher: v.optional(v.string()),
+    isbn: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
+    description: v.optional(v.string()),
+    abstract: v.optional(v.string()),
+    pdfUrl: v.optional(v.string()),
+    fileStorageId: v.optional(v.id("_storage")),
+    sortOrder: v.float64(),
+    status: v.union(v.literal("published"), v.literal("draft")),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const { sessionToken, ...data } = args;
+    return await ctx.db.insert("textbooks", data);
+  },
+});
+
+export const updateTextbook = mutation({
+  args: {
+    sessionToken: v.string(),
+    id: v.id("textbooks"),
+    title: v.optional(v.string()),
+    year: v.optional(v.string()),
+    publisher: v.optional(v.string()),
+    isbn: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
+    description: v.optional(v.string()),
+    abstract: v.optional(v.string()),
+    pdfUrl: v.optional(v.string()),
+    fileStorageId: v.optional(v.id("_storage")),
+    sortOrder: v.optional(v.float64()),
+    status: v.optional(v.union(v.literal("published"), v.literal("draft"))),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
+    const { sessionToken, id, ...updates } = args;
+    const cleanUpdates: Record<string, any> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        cleanUpdates[key] = value;
+      }
+    }
+
+    if (Object.keys(cleanUpdates).length > 0) {
+      await ctx.db.patch(id, cleanUpdates);
+    }
+  },
+});
+
+export const deleteTextbook = mutation({
+  args: {
+    sessionToken: v.string(),
+    id: v.id("textbooks"),
+  },
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt < Date.now()) {
+      throw new Error("Unauthorized");
+    }
+
     await ctx.db.delete(args.id);
   },
 });

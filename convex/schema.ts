@@ -107,6 +107,16 @@ export default defineSchema({
     authors: v.string(),
     pdfUrl: v.optional(v.string()),
     abstract: v.string(),
+    category: v.optional(
+      v.union(
+        v.literal("reviewed_journals"),
+        v.literal("collections"),
+        v.literal("conferences"),
+        v.literal("media_interviews")
+      )
+    ),
+    pages: v.optional(v.string()),
+    issueNumber: v.optional(v.string()),
     contentBlocks: v.optional(
       v.array(
         v.object({
@@ -135,6 +145,7 @@ export default defineSchema({
     title: v.optional(v.string()),
     bio: v.optional(v.string()),
     photoUrl: v.optional(v.string()),
+    photoStorageId: v.optional(v.id("_storage")),
     cvEntries: v.array(
       v.object({
         year: v.string(),
@@ -158,6 +169,20 @@ export default defineSchema({
     imageStorageId: v.id("_storage"),
     category: v.optional(v.string()),
     date: v.optional(v.string()),
+    sortOrder: v.float64(),
+    status: v.union(v.literal("published"), v.literal("draft")),
+  }).index("by_status", ["status"]),
+
+  textbooks: defineTable({
+    title: v.string(),
+    year: v.string(),
+    publisher: v.optional(v.string()),
+    isbn: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
+    description: v.optional(v.string()),
+    abstract: v.optional(v.string()),
+    pdfUrl: v.optional(v.string()),
+    fileStorageId: v.optional(v.id("_storage")),
     sortOrder: v.float64(),
     status: v.union(v.literal("published"), v.literal("draft")),
   }).index("by_status", ["status"]),

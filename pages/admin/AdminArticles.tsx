@@ -19,6 +19,9 @@ interface ArticleFormData {
   authors: string;
   abstract: string;
   pdfUrl: string;
+  category: string;
+  pages: string;
+  issueNumber: string;
   status: 'published' | 'draft';
 }
 
@@ -29,7 +32,17 @@ const emptyFormData: ArticleFormData = {
   authors: '',
   abstract: '',
   pdfUrl: '',
+  category: '',
+  pages: '',
+  issueNumber: '',
   status: 'draft',
+};
+
+const categoryLabels: Record<string, string> = {
+  reviewed_journals: 'Статьи в рецензируемых научных журналах',
+  collections: 'Статьи в сборниках',
+  conferences: 'Материалы межд. научных конференций, форумов и конгрессов',
+  media_interviews: 'Интервью и статьи в СМИ',
 };
 
 const blockTypeLabels: Record<string, string> = {
@@ -80,6 +93,9 @@ const AdminArticles: React.FC = () => {
       authors: article.authors,
       abstract: article.abstract,
       pdfUrl: article.pdfUrl || '',
+      category: article.category || '',
+      pages: article.pages || '',
+      issueNumber: article.issueNumber || '',
       status: article.status,
     });
     setContentBlocks(
@@ -126,6 +142,9 @@ const AdminArticles: React.FC = () => {
         fileStorageId: fileStorageId || undefined,
         contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
         status: formData.status,
+        category: (formData.category as any) || undefined,
+        pages: formData.pages || undefined,
+        issueNumber: formData.issueNumber || undefined,
       });
     } else {
       await createResearch({
@@ -139,6 +158,9 @@ const AdminArticles: React.FC = () => {
         fileStorageId: fileStorageId || undefined,
         contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
         status: formData.status,
+        category: (formData.category as any) || undefined,
+        pages: formData.pages || undefined,
+        issueNumber: formData.issueNumber || undefined,
       });
     }
 
@@ -409,6 +431,19 @@ const AdminArticles: React.FC = () => {
                   />
                 </div>
                 <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Категория</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
+                  >
+                    <option value="">— Не указана —</option>
+                    {Object.entries(categoryLabels).map(([key, label]) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Авторы *</label>
                   <input
                     type="text"
@@ -419,17 +454,36 @@ const AdminArticles: React.FC = () => {
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Аннотация *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Аннотация</label>
                   <textarea
                     value={formData.abstract}
                     onChange={(e) => setFormData({ ...formData, abstract: e.target.value })}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
-                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ссылка на PDF</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Номер журнала</label>
+                  <input
+                    type="text"
+                    value={formData.issueNumber}
+                    onChange={(e) => setFormData({ ...formData, issueNumber: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
+                    placeholder="№ 5 (120)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Номер страницы</label>
+                  <input
+                    type="text"
+                    value={formData.pages}
+                    onChange={(e) => setFormData({ ...formData, pages: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
+                    placeholder="С. 45-52"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Ссылка на источник</label>
                   <input
                     type="text"
                     value={formData.pdfUrl}
@@ -619,7 +673,7 @@ const AdminArticles: React.FC = () => {
               </button>
               <button
                 onClick={handleSave}
-                disabled={!formData.title || !formData.year || !formData.authors || !formData.abstract}
+                disabled={!formData.title || !formData.year || !formData.authors}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {editingId ? 'Сохранить' : 'Создать'}

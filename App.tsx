@@ -22,7 +22,10 @@ import AdminArticles from './pages/admin/AdminArticles';
 import AdminCoAuthors from './pages/admin/AdminCoAuthors';
 import AdminGallery from './pages/admin/AdminGallery';
 import AdminPages from './pages/admin/AdminPages';
+import AdminAuthor from './pages/admin/AdminAuthor';
+import AdminTextbooks from './pages/admin/AdminTextbooks';
 import AdminLogin from './pages/admin/AdminLogin';
+import Textbooks from './pages/Textbooks';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -48,6 +51,7 @@ const App: React.FC = () => {
         <Route path="/co-authors" element={<CoAuthors />} />
         <Route path="/books" element={<Books />} />
         <Route path="/books/:id" element={<BookDetail />} />
+        <Route path="/textbooks" element={<Textbooks />} />
         <Route path="/articles" element={<Articles />} />
         <Route path="/articles/:id" element={<ArticleDetail />} />
         <Route path="/videos" element={<Videos />} />
@@ -72,12 +76,14 @@ const App: React.FC = () => {
             <AdminLayout onLogout={handleLogout}>
               <Routes>
                 <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="pages" element={<AdminPages />} />
+                <Route path="author" element={<AdminAuthor />} />
                 <Route path="books" element={<AdminBooks />} />
+                <Route path="textbooks" element={<AdminTextbooks />} />
                 <Route path="articles" element={<AdminArticles />} />
                 <Route path="videos" element={<AdminVideos />} />
                 <Route path="co-authors" element={<AdminCoAuthors />} />
                 <Route path="gallery" element={<AdminGallery />} />
-                <Route path="pages" element={<AdminPages />} />
                 <Route path="*" element={<Navigate to="dashboard" replace />} />
               </Routes>
             </AdminLayout>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Book, Video, FileEdit, Settings, LogOut, User, FileText, Users, Image } from 'lucide-react';
+import { LayoutDashboard, Book, BookOpen, Video, FileEdit, Settings, LogOut, User, FileText, Users, Image, UserCircle } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -19,12 +19,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
 
   const navItems = [
     { name: 'Панель', path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Контент сайта', path: '/admin/pages', icon: FileEdit },
+    { name: 'Автор', path: '/admin/author', icon: UserCircle },
+    { name: 'Со-авторы', path: '/admin/co-authors', icon: Users },
     { name: 'Книги', path: '/admin/books', icon: Book },
+    { name: 'Уч. издания', path: '/admin/textbooks', icon: BookOpen },
     { name: 'Статьи', path: '/admin/articles', icon: FileText },
     { name: 'Видео', path: '/admin/videos', icon: Video },
-    { name: 'Со-авторы', path: '/admin/co-authors', icon: Users },
     { name: 'Фотогаллерея', path: '/admin/gallery', icon: Image },
-    { name: 'Контент сайта', path: '/admin/pages', icon: FileEdit },
   ];
 
   const isActive = (path: string) => location.pathname === path;
