@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Save, FileText, Plus, X } from 'lucide-react';
+import RichTextEditor from '../../components/RichTextEditor';
 
 const AdminAuthor: React.FC = () => {
   const profileData = useQuery(api.profile.getProfile);
@@ -68,34 +69,17 @@ const AdminAuthor: React.FC = () => {
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Полное описание научной деятельности</label>
-            <textarea
-              rows={10}
-              className="w-full px-4 py-4 border border-slate-200 rounded-md focus:border-blue-600 outline-none font-serif text-lg leading-relaxed"
-              value={extendedBio}
-              onChange={e => setExtendedBio(e.target.value)}
-            />
+            <RichTextEditor value={extendedBio} onChange={setExtendedBio} minHeight="300px" />
           </div>
 
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Список публикаций</label>
-            <textarea
-              rows={8}
-              className="w-full px-4 py-4 border border-slate-200 rounded-md focus:border-blue-600 outline-none font-serif text-lg leading-relaxed"
-              value={publications}
-              placeholder="Введите список публикаций..."
-              onChange={e => setPublications(e.target.value)}
-            />
+            <RichTextEditor value={publications} onChange={setPublications} placeholder="Введите список публикаций..." minHeight="250px" />
           </div>
 
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Научные направления</label>
-            <textarea
-              rows={5}
-              className="w-full px-4 py-4 border border-slate-200 rounded-md focus:border-blue-600 outline-none font-serif text-lg leading-relaxed"
-              value={researchDirections}
-              placeholder="Введите научные направления..."
-              onChange={e => setResearchDirections(e.target.value)}
-            />
+            <RichTextEditor value={researchDirections} onChange={setResearchDirections} placeholder="Введите научные направления..." minHeight="150px" />
           </div>
 
           <div className="space-y-3">
@@ -141,13 +125,7 @@ const AdminAuthor: React.FC = () => {
 
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Награды и признание</label>
-            <textarea
-              rows={6}
-              className="w-full px-4 py-4 border border-slate-200 rounded-md focus:border-blue-600 outline-none font-serif text-lg leading-relaxed"
-              value={awards}
-              placeholder="Введите информацию о наградах..."
-              onChange={e => setAwards(e.target.value)}
-            />
+            <RichTextEditor value={awards} onChange={setAwards} placeholder="Введите информацию о наградах..." minHeight="200px" />
           </div>
 
           <div className="p-4 bg-slate-50 border border-slate-100 rounded-md flex gap-4">

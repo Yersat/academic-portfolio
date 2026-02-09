@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Download, ArrowRight, ExternalLink } from 'lucide-react';
+import RichTextDisplay from '../components/RichTextDisplay';
 
 const About: React.FC = () => {
   const profile = useQuery(api.profile.getProfile);
@@ -26,7 +27,7 @@ const About: React.FC = () => {
         <section className="space-y-8">
           <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Биография</h4>
           <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-            <p>{profile.extendedBio}</p>
+            <RichTextDisplay content={profile.extendedBio} />
           </div>
           {profile.cvUrl && (
             <div className="pt-4">
@@ -45,7 +46,7 @@ const About: React.FC = () => {
           <section className="space-y-8 pt-16 border-t border-gray-200">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Список публикаций</h4>
             <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-              <p className="whitespace-pre-wrap">{profile.publications}</p>
+              <RichTextDisplay content={profile.publications} />
             </div>
           </section>
         )}
@@ -55,7 +56,7 @@ const About: React.FC = () => {
           <section className="space-y-8 pt-16 border-t border-gray-200">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Научные направления</h4>
             <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-              <p className="whitespace-pre-wrap">{profile.researchDirections}</p>
+              <RichTextDisplay content={profile.researchDirections} />
             </div>
           </section>
         )}
@@ -88,7 +89,7 @@ const About: React.FC = () => {
           <section className="space-y-8 pt-16 border-t border-gray-200">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Награды и признание</h4>
             <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-              <p className="whitespace-pre-wrap">{profile.awards}</p>
+              <RichTextDisplay content={profile.awards} />
             </div>
           </section>
         )}

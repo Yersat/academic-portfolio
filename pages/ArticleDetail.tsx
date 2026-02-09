@@ -5,6 +5,7 @@ import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import { ArrowLeft, FileText } from 'lucide-react';
+import RichTextDisplay from '../components/RichTextDisplay';
 
 const ArticleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ const ArticleDetail: React.FC = () => {
     if (!paper.contentBlocks || paper.contentBlocks.length === 0) {
       return (
         <div className="prose prose-lg prose-slate max-w-none">
-          <p className="text-lg text-gray-800 leading-relaxed">{paper.abstract}</p>
+          <RichTextDisplay content={paper.abstract} className="text-lg text-gray-800 leading-relaxed" />
         </div>
       );
     }
@@ -41,9 +42,9 @@ const ArticleDetail: React.FC = () => {
           switch (block.type) {
             case 'paragraph':
               return (
-                <p key={index} className="text-lg text-gray-800 leading-relaxed mb-6">
-                  {block.text}
-                </p>
+                <div key={index} className="text-lg text-gray-800 leading-relaxed mb-6">
+                  <RichTextDisplay content={block.text || ''} />
+                </div>
               );
             case 'heading': {
               const level = block.level || 2;
@@ -80,9 +81,9 @@ const ArticleDetail: React.FC = () => {
             }
             case 'quote':
               return (
-                <blockquote key={index} className="border-l-4 border-gray-300 pl-6 italic text-gray-600 my-8">
-                  {block.text}
-                </blockquote>
+                <div key={index} className="border-l-4 border-gray-300 pl-6 italic text-gray-600 my-8">
+                  <RichTextDisplay content={block.text || ''} />
+                </div>
               );
             default:
               return null;
@@ -113,9 +114,7 @@ const ArticleDetail: React.FC = () => {
       {/* Abstract */}
       <section className="space-y-4 pb-10 border-b border-gray-200">
         <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Аннотация</h4>
-        <p className="text-lg text-gray-700 leading-relaxed italic">
-          {paper.abstract}
-        </p>
+        <RichTextDisplay content={paper.abstract} className="text-lg text-gray-700 leading-relaxed italic" />
       </section>
 
       {/* Content Blocks */}

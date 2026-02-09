@@ -3,6 +3,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { Plus, Search, Edit3, Trash2, X, FileX, Upload } from 'lucide-react';
+import RichTextEditor from '../../components/RichTextEditor';
 
 interface TextbookFormData {
   title: string;
@@ -378,12 +379,7 @@ const AdminTextbooks: React.FC = () => {
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Аннотация</label>
-                  <textarea
-                    value={formData.abstract}
-                    onChange={(e) => setFormData({ ...formData, abstract: e.target.value })}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
-                  />
+                  <RichTextEditor value={formData.abstract} onChange={val => setFormData({...formData, abstract: val})} minHeight="100px" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Ссылка на источник</label>

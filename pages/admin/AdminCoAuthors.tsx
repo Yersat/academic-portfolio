@@ -3,6 +3,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { Plus, Edit3, Trash2, X, FileX, Users, Upload } from 'lucide-react';
+import RichTextEditor from '../../components/RichTextEditor';
 
 interface CoAuthorFormData {
   name: string;
@@ -304,12 +305,7 @@ const AdminCoAuthors: React.FC = () => {
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Биография</label>
-                  <textarea
-                    value={formData.bio}
-                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
-                  />
+                  <RichTextEditor value={formData.bio} onChange={val => setFormData({...formData, bio: val})} minHeight="100px" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Фото</label>
@@ -376,23 +372,13 @@ const AdminCoAuthors: React.FC = () => {
               {/* Список публикаций */}
               <div className="border-t border-gray-100 pt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Список публикаций</label>
-                <textarea
-                  value={formData.publications}
-                  onChange={(e) => setFormData({ ...formData, publications: e.target.value })}
-                  rows={6}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
-                />
+                <RichTextEditor value={formData.publications} onChange={val => setFormData({...formData, publications: val})} placeholder="Введите список публикаций..." minHeight="200px" />
               </div>
 
               {/* Научные направления */}
               <div className="border-t border-gray-100 pt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Научные направления</label>
-                <textarea
-                  value={formData.researchDirections}
-                  onChange={(e) => setFormData({ ...formData, researchDirections: e.target.value })}
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
-                />
+                <RichTextEditor value={formData.researchDirections} onChange={val => setFormData({...formData, researchDirections: val})} placeholder="Введите научные направления..." minHeight="130px" />
               </div>
 
               {/* Индексация и профили */}
@@ -442,12 +428,7 @@ const AdminCoAuthors: React.FC = () => {
               {/* Награды и признание */}
               <div className="border-t border-gray-100 pt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Награды и признание</label>
-                <textarea
-                  value={formData.awards}
-                  onChange={(e) => setFormData({ ...formData, awards: e.target.value })}
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
-                />
+                <RichTextEditor value={formData.awards} onChange={val => setFormData({...formData, awards: val})} placeholder="Введите информацию о наградах..." minHeight="130px" />
               </div>
             </div>
 

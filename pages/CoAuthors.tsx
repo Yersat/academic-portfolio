@@ -3,6 +3,7 @@ import React from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { ExternalLink } from 'lucide-react';
+import RichTextDisplay from '../components/RichTextDisplay';
 
 const CoAuthors: React.FC = () => {
   const coAuthors = useQuery(api.coAuthors.listPublished);
@@ -71,7 +72,7 @@ const CoAuthors: React.FC = () => {
               <section className="space-y-4">
                 <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Биография</h4>
                 <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-                  <p>{coAuthor.bio}</p>
+                  <RichTextDisplay content={coAuthor.bio} />
                 </div>
               </section>
             )}
@@ -81,7 +82,7 @@ const CoAuthors: React.FC = () => {
               <section className="space-y-4">
                 <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Список публикаций</h4>
                 <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-                  <p className="whitespace-pre-wrap">{coAuthor.publications}</p>
+                  <RichTextDisplay content={coAuthor.publications} />
                 </div>
               </section>
             )}
@@ -91,7 +92,7 @@ const CoAuthors: React.FC = () => {
               <section className="space-y-4">
                 <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Научные направления</h4>
                 <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-                  <p className="whitespace-pre-wrap">{coAuthor.researchDirections}</p>
+                  <RichTextDisplay content={coAuthor.researchDirections} />
                 </div>
               </section>
             )}
@@ -124,7 +125,7 @@ const CoAuthors: React.FC = () => {
               <section className="space-y-4">
                 <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Награды и признание</h4>
                 <div className="prose prose-lg prose-slate font-normal leading-relaxed text-gray-800 max-w-none">
-                  <p className="whitespace-pre-wrap">{coAuthor.awards}</p>
+                  <RichTextDisplay content={coAuthor.awards} />
                 </div>
               </section>
             )}

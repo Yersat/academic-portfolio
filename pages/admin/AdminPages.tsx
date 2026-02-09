@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Save, User, Globe, Image, Upload } from 'lucide-react';
+import RichTextEditor from '../../components/RichTextEditor';
 
 const AdminPages: React.FC = () => {
   const profileData = useQuery(api.profile.getProfile);
@@ -139,21 +140,11 @@ const AdminPages: React.FC = () => {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Учёное звание</label>
-              <textarea
-                rows={3}
-                className="w-full px-4 py-2 border border-slate-200 rounded-md focus:border-blue-600 outline-none resize-none"
-                value={profile.title}
-                onChange={e => setProfile({...profile, title: e.target.value})}
-              />
+              <RichTextEditor value={profile.title} onChange={val => setProfile({...profile, title: val})} minHeight="100px" />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Краткая биография для главной</label>
-              <textarea
-                rows={6}
-                className="w-full px-4 py-2 border border-slate-200 rounded-md focus:border-blue-600 outline-none resize-none"
-                value={profile.bio}
-                onChange={e => setProfile({...profile, bio: e.target.value})}
-              />
+              <RichTextEditor value={profile.bio} onChange={val => setProfile({...profile, bio: val})} minHeight="200px" />
               <p className="text-[10px] text-slate-400 italic">Отображается на главной странице. Будьте лаконичны.</p>
             </div>
           </div>

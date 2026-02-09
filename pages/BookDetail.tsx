@@ -6,6 +6,7 @@ import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import { ArrowLeft, ShoppingCart, Share2, Info, FileText, ExternalLink } from 'lucide-react';
 import PdfCheckoutModal from '../components/PdfCheckoutModal';
+import RichTextDisplay from '../components/RichTextDisplay';
 import BookPreview from '../components/BookPreview';
 
 const BookDetail: React.FC = () => {
@@ -121,9 +122,7 @@ const BookDetail: React.FC = () => {
 
           <div className="prose prose-slate prose-lg max-w-none">
             <h3 className="text-xl font-serif font-bold mb-4">Аннотация</h3>
-            <p className="text-gray-700 leading-relaxed font-light">
-              {book.abstract}
-            </p>
+            <RichTextDisplay content={book.abstract} className="text-gray-700 leading-relaxed font-light" />
           </div>
 
           <div className="flex flex-wrap gap-4 pt-4">

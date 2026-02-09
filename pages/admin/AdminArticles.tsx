@@ -3,6 +3,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { Plus, Search, Edit3, Trash2, X, FileX, ChevronUp, ChevronDown, Upload } from 'lucide-react';
+import RichTextEditor from '../../components/RichTextEditor';
 
 interface ContentBlock {
   type: 'paragraph' | 'heading' | 'image' | 'quote';
@@ -455,12 +456,7 @@ const AdminArticles: React.FC = () => {
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Аннотация</label>
-                  <textarea
-                    value={formData.abstract}
-                    onChange={(e) => setFormData({ ...formData, abstract: e.target.value })}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none"
-                  />
+                  <RichTextEditor value={formData.abstract} onChange={val => setFormData({...formData, abstract: val})} minHeight="100px" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Номер журнала</label>
@@ -575,12 +571,11 @@ const AdminArticles: React.FC = () => {
 
                       {/* Block content editor based on type */}
                       {(block.type === 'paragraph' || block.type === 'quote') && (
-                        <textarea
+                        <RichTextEditor
                           value={block.text || ''}
-                          onChange={(e) => updateBlock(index, { text: e.target.value })}
-                          rows={3}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none resize-none text-sm"
+                          onChange={html => updateBlock(index, { text: html })}
                           placeholder={block.type === 'quote' ? 'Текст цитаты...' : 'Текст абзаца...'}
+                          minHeight="100px"
                         />
                       )}
 

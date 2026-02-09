@@ -4,6 +4,7 @@ import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Link } from 'react-router-dom';
 import { FileText } from 'lucide-react';
+import RichTextDisplay from '../components/RichTextDisplay';
 
 const categoryLabels: Record<string, string> = {
   reviewed_journals: 'Статьи в рецензируемых научных журналах',
@@ -206,8 +207,8 @@ const Articles: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="prose prose-sm text-gray-700 font-normal leading-relaxed max-w-2xl">
-                  <p className="line-clamp-3">{paper.abstract}</p>
+                <div className="prose prose-sm text-gray-700 font-normal leading-relaxed max-w-2xl line-clamp-3">
+                  <RichTextDisplay content={paper.abstract} />
                 </div>
 
                 <div className="flex items-center gap-2 pt-2">
