@@ -8,6 +8,7 @@ const AdminPages: React.FC = () => {
   const profileData = useQuery(api.profile.getProfile);
   const updateProfile = useMutation(api.profile.updateProfile);
   const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
+  const checkSession = useMutation(api.auth.checkSession);
   const getSessionToken = () => {
     const token = localStorage.getItem('admin_session_token');
     if (!token) {
@@ -76,17 +77,32 @@ const AdminPages: React.FC = () => {
     if (!file) return;
     setUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
+      const uploadUrl = await generateUploadUrl({ sessionToken: token });
       const result = await fetch(uploadUrl, { method: 'POST', body: file });
       const { storageId } = await result.json();
       if (type === 'profile') {
-        await updateProfile({ sessionToken: getSessionToken(), profilePhotoStorageId: storageId });
+        await updateProfile({ sessionToken: token, profilePhotoStorageId: storageId });
       } else {
-        await updateProfile({ sessionToken: getSessionToken(), coverPhotoStorageId: storageId });
+        await updateProfile({ sessionToken: token, coverPhotoStorageId: storageId });
       }
       alert(type === 'profile' ? 'Фото профиля обновлено' : 'Обложка обновлена');
-    } catch (err) {
-      alert('Ошибка загрузки');
+    } catch (err: any) {
+      console.error('Photo upload failed:', err);
+      if (err.message?.includes('Server Error') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+      } else {
+        alert(`Ошибка загрузки: ${err.message || 'Попробуйте ещё раз.'}`);
+      }
     }
     setUploading(false);
   };

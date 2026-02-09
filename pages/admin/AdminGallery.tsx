@@ -44,6 +44,7 @@ const AdminGallery: React.FC = () => {
   const updateGalleryPhoto = useMutation(api.admin.updateGalleryPhoto);
   const deleteGalleryPhoto = useMutation(api.admin.deleteGalleryPhoto);
   const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
+  const checkSession = useMutation(api.auth.checkSession);
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -91,7 +92,15 @@ const AdminGallery: React.FC = () => {
 
     setIsUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
+      const uploadUrl = await generateUploadUrl({ sessionToken: token });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': selectedFile.type },
@@ -100,7 +109,7 @@ const AdminGallery: React.FC = () => {
       const { storageId } = await result.json();
 
       await createGalleryPhoto({
-        sessionToken: getSessionToken(),
+        sessionToken: token,
         imageStorageId: storageId,
         title: uploadFormData.title || undefined,
         description: uploadFormData.description || undefined,
@@ -113,8 +122,15 @@ const AdminGallery: React.FC = () => {
       setIsUploadModalOpen(false);
       setUploadFormData(emptyUploadFormData);
       setSelectedFile(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Upload failed:', err);
+      if (err.message?.includes('Server Error') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+      } else {
+        alert(`Ошибка загрузки: ${err.message || 'Попробуйте ещё раз.'}`);
+      }
     }
     setIsUploading(false);
   };

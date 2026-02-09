@@ -39,6 +39,7 @@ const AdminBooks: React.FC = () => {
   const updateBook = useMutation(api.admin.updateBook);
   const deleteBook = useMutation(api.admin.deleteBook);
   const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
+  const checkSession = useMutation(api.auth.checkSession);
   const attachPdf = useMutation(api.admin.attachPdf);
   const createPreviewPage = useMutation(api.admin.createPreviewPage);
   const deletePreviewPage = useMutation(api.admin.deletePreviewPage);
@@ -133,16 +134,29 @@ const AdminBooks: React.FC = () => {
   const handlePdfUpload = async (bookId: Id<"books">, file: File) => {
     setIsUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
+      const uploadUrl = await generateUploadUrl({ sessionToken: token });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
         body: file,
       });
       const { storageId } = await result.json();
-      await attachPdf({ sessionToken: getSessionToken(), bookId, storageId });
-    } catch (err) {
+      await attachPdf({ sessionToken: token, bookId, storageId });
+    } catch (err: any) {
       console.error('Upload failed:', err);
+      if (err.message?.includes('Server Error') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+      }
     }
     setIsUploading(false);
   };
@@ -156,7 +170,15 @@ const AdminBooks: React.FC = () => {
     if (!editingBookId) return;
     setIsUploadingPreview(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
+      const uploadUrl = await generateUploadUrl({ sessionToken: token });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
@@ -165,13 +187,20 @@ const AdminBooks: React.FC = () => {
       const { storageId } = await result.json();
       const nextOrder = (previewPages?.length ?? 0);
       await createPreviewPage({
-        sessionToken: getSessionToken(),
+        sessionToken: token,
         bookId: editingBookId,
         imageStorageId: storageId,
         sortOrder: nextOrder,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Preview upload failed:', err);
+      if (err.message?.includes('Server Error') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+      } else {
+        alert(`Ошибка загрузки: ${err.message || 'Попробуйте ещё раз.'}`);
+      }
     }
     setIsUploadingPreview(false);
   };

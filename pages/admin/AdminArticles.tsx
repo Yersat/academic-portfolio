@@ -45,6 +45,7 @@ const AdminArticles: React.FC = () => {
   const updateResearch = useMutation(api.profile.updateResearch);
   const deleteResearch = useMutation(api.profile.deleteResearch);
   const generateUploadUrl = useMutation(api.admin.generateUploadUrl);
+  const checkSession = useMutation(api.auth.checkSession);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<Id<"researchPapers"> | null>(null);
@@ -183,7 +184,15 @@ const AdminArticles: React.FC = () => {
   const handleImageUpload = async (index: number, file: File) => {
     setIsUploading(true);
     try {
-      const uploadUrl = await generateUploadUrl({ sessionToken: getSessionToken() });
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
+      const uploadUrl = await generateUploadUrl({ sessionToken: token });
       const result = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': file.type },
@@ -193,8 +202,8 @@ const AdminArticles: React.FC = () => {
       updateBlock(index, { imageStorageId: storageId });
     } catch (err: any) {
       console.error('Upload failed:', err);
-      if (err.message?.includes('Unauthorized') || err.message?.includes('not found') || err.message?.includes('Сессия не найдена')) {
-        alert('Сессия истекла. Пожалуйста, выйдите и войдите заново.');
+      if (err.message?.includes('Server Error') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
         localStorage.removeItem('admin_session_token');
         window.location.hash = '#/admin/login';
       } else {
@@ -208,6 +217,13 @@ const AdminArticles: React.FC = () => {
     setIsFileUploading(true);
     try {
       const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
       const uploadUrl = await generateUploadUrl({ sessionToken: token });
       const result = await fetch(uploadUrl, {
         method: 'POST',
@@ -218,8 +234,8 @@ const AdminArticles: React.FC = () => {
       setFileStorageId(storageId as Id<"_storage">);
     } catch (err: any) {
       console.error('File upload failed:', err);
-      if (err.message?.includes('Unauthorized') || err.message?.includes('not found') || err.message?.includes('Сессия не найдена')) {
-        alert('Сессия истекла. Пожалуйста, выйдите и войдите заново.');
+      if (err.message?.includes('Server Error') || err.message?.includes('Сессия не найдена')) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
         localStorage.removeItem('admin_session_token');
         window.location.hash = '#/admin/login';
       } else {
