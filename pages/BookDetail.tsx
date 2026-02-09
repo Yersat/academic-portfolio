@@ -115,8 +115,8 @@ const BookDetail: React.FC = () => {
         {/* Content Column */}
         <div className="lg:col-span-3 space-y-8">
           <header className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold leading-tight text-gray-900">{book.title}</h1>
-            <p className="text-2xl text-gray-500 font-serif italic">"{book.description}"</p>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold leading-tight text-gray-900">{book.title}</h1>
+            <p className="text-lg md:text-xl text-gray-500 font-serif italic">"{book.description}"</p>
           </header>
 
           <div className="prose prose-slate prose-lg max-w-none">

@@ -53,7 +53,7 @@ const AdminArticles: React.FC = () => {
   const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
   const [newBlockType, setNewBlockType] = useState<ContentBlock['type']>('paragraph');
   const [isUploading, setIsUploading] = useState(false);
-  const [fileStorageId, setFileStorageId] = useState<string | null>(null);
+  const [fileStorageId, setFileStorageId] = useState<Id<"_storage"> | null>(null);
   const [isFileUploading, setIsFileUploading] = useState(false);
 
   const sessionToken = localStorage.getItem('admin_session_token') || '';
@@ -84,7 +84,7 @@ const AdminArticles: React.FC = () => {
         level: block.level,
       }))
     );
-    setFileStorageId(article.fileStorageId || null);
+    setFileStorageId((article.fileStorageId as Id<"_storage">) || null);
     setIsModalOpen(true);
   };
 
@@ -201,9 +201,10 @@ const AdminArticles: React.FC = () => {
         body: file,
       });
       const { storageId } = await result.json();
-      setFileStorageId(storageId);
+      setFileStorageId(storageId as Id<"_storage">);
     } catch (err) {
       console.error('File upload failed:', err);
+      alert('Ошибка загрузки файла. Попробуйте ещё раз.');
     }
     setIsFileUploading(false);
   };

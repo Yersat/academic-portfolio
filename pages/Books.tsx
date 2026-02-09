@@ -61,8 +61,8 @@ const Books: React.FC = () => {
 
               {/* PDF Price Badge */}
               {book.pdfPrice && book.pdfPrice > 0 && (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-sm text-xs font-bold">
-                  <FileText size={12} />
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md text-sm font-bold shadow-sm">
+                  <FileText size={14} />
                   PDF: {formatPrice(book.pdfPrice, book.pdfCurrency || 'KZT')}
                 </div>
               )}
