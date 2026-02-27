@@ -128,9 +128,12 @@ const PublicLayout: React.FC = () => {
       {/* Footer */}
       <footer className="max-w-4xl mx-auto px-6 py-16 border-t border-gray-300 text-center text-[11px] text-black uppercase tracking-[0.15em] font-bold">
         <p>&copy; {new Date().getFullYear()} Аязбекова Сабина — {profileUniversity}</p>
+        <p className="mt-3 text-[10px] opacity-50">
+          Made by <a href="https://www.fastdev.org/services/personal-sites" target="_blank" rel="noopener noreferrer" className="hover:underline">FastDev, LLC</a>
+        </p>
         <div className="mt-6 opacity-60 hover:opacity-100 transition-opacity flex justify-center space-x-8">
           <Link to="/admin" className="hover:underline">Панель управления</Link>
-          <a href="#" className="hover:underline">Политика конфиденциальности</a>
+          <Link to="/privacy" className="hover:underline">Политика конфиденциальности</Link>
         </div>
       </footer>
     </div>

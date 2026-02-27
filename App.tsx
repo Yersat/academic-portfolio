@@ -26,6 +26,7 @@ import AdminAuthor from './pages/admin/AdminAuthor';
 import AdminTextbooks from './pages/admin/AdminTextbooks';
 import AdminLogin from './pages/admin/AdminLogin';
 import Textbooks from './pages/Textbooks';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -57,6 +58,7 @@ const App: React.FC = () => {
         <Route path="/videos" element={<Videos />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
         {/* Redirects for old URLs */}
         <Route path="/media" element={<Navigate to="/videos" replace />} />

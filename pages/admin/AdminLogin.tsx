@@ -23,11 +23,16 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      const { token } = await login({ password });
-      onLogin(token);
+      const result = await login({ password });
+      if (!result.success) {
+        setError(result.error);
+        setIsLoading(false);
+        return;
+      }
+      onLogin(result.token);
       navigate('/admin/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Неверные учётные данные');
+      setError('Ошибка соединения с сервером. Попробуйте позже.');
       setIsLoading(false);
     }
   };

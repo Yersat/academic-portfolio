@@ -64,12 +64,6 @@ const Contact: React.FC = () => {
             </div>
           </section>
 
-          <div className="p-8 bg-blue-50 border border-blue-100 rounded-sm">
-            <h4 className="text-blue-900 font-serif font-bold mb-2 italic">Информация для студентов</h4>
-            <p className="text-sm text-blue-800/80 leading-relaxed font-light">
-              Студентам, желающим получить научное руководство, необходимо приложить исследовательское предложение (2–3 страницы) и актуальную выписку из зачётной ведомости перед запросом официальной встречи.
-            </p>
-          </div>
         </div>
 
         <div>

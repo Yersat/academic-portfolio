@@ -10,7 +10,7 @@ export const adminLogin = mutation({
     }
 
     if (args.password !== adminPassword) {
-      throw new Error("Неверный пароль");
+      return { success: false as const, error: "Неверный пароль" };
     }
 
     // Generate session token
@@ -24,7 +24,7 @@ export const adminLogin = mutation({
 
     await ctx.db.insert("adminSessions", { token, expiresAt });
 
-    return { token, expiresAt };
+    return { success: true as const, token, expiresAt };
   },
 });
 

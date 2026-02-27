@@ -24,9 +24,6 @@ const Home: React.FC = () => {
             <p className="first-letter:text-7xl first-letter:font-serif first-letter:float-left first-letter:mr-3 first-letter:text-black first-letter:mt-1">
               {profile.bio}
             </p>
-            <p>
-              Моя текущая научная деятельность в {profile.university} сосредоточена на исследованиях в области культурологии, философии и искусствоведения. Я стремлюсь объединить теоретические подходы с практическим анализом культурных процессов.
-            </p>
           </div>
 
           <div className="pt-12 border-t border-gray-200">
