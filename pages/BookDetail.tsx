@@ -1,18 +1,18 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
-import { ArrowLeft, ShoppingCart, Share2, Info, FileText, ExternalLink } from 'lucide-react';
-import PdfCheckoutModal from '../components/PdfCheckoutModal';
+import { ArrowLeft, ShoppingCart, Share2, Info, MessageCircle, ExternalLink } from 'lucide-react';
 import RichTextDisplay from '../components/RichTextDisplay';
 import BookPreview from '../components/BookPreview';
+
+const WHATSAPP_NUMBER = '77019108862';
 
 const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const book = useQuery(api.books.getById, id ? { id: id as Id<"books"> } : "skip");
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (book === undefined) {
     return <div className="text-center py-20 text-gray-400">Loading...</div>;
@@ -28,6 +28,7 @@ const BookDetail: React.FC = () => {
 
   const hasPdfOption = book.pdfPrice && book.pdfPrice > 0;
   const hasLitresOption = book.litresUrl && book.litresUrl.trim() !== '';
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Здравствуйте! Хочу купить книгу «${book.title}».`)}`;
 
   return (
     <div className="space-y-12">
@@ -61,53 +62,53 @@ const BookDetail: React.FC = () => {
           </div>
 
           {/* Purchase Options Card */}
-          {(hasPdfOption || hasLitresOption) && (
-            <div className="bg-gray-50 p-6 border border-gray-100 rounded-sm space-y-4">
-              <div className="flex items-center text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">
-                <ShoppingCart size={14} className="mr-2" /> Варианты покупки
-              </div>
-
-              <div className="space-y-3">
-                {/* Litres button */}
-                {hasLitresOption && (
-                  <a
-                    href={book.litresUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between w-full px-4 py-3 bg-white border border-gray-200 rounded-sm hover:border-gray-400 hover:bg-gray-50 transition-all group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <ExternalLink size={18} className="text-gray-400 group-hover:text-gray-700" />
-                      <div>
-                        <span className="font-bold text-gray-900 text-sm">Купить на Литрес</span>
-                        <span className="block text-xs text-gray-500">Электронная и аудиокнига</span>
-                      </div>
-                    </div>
-                    <ArrowLeft size={16} className="rotate-180 text-gray-400 group-hover:text-gray-700" />
-                  </a>
-                )}
-
-                {/* PDF button */}
-                {hasPdfOption && (
-                  <button
-                    onClick={() => setIsCheckoutOpen(true)}
-                    className="flex items-center justify-between w-full px-4 py-3 bg-gray-900 text-white rounded-sm hover:bg-black transition-all group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FileText size={18} />
-                      <div className="text-left">
-                        <span className="font-bold text-sm block">Купить PDF вариант</span>
-                        <span className="text-xs text-gray-300">Мгновенная доставка на email</span>
-                      </div>
-                    </div>
-                    <span className="font-bold text-lg">
-                      {formatPrice(book.pdfPrice!, book.pdfCurrency || 'KZT')}
-                    </span>
-                  </button>
-                )}
-              </div>
+          <div className="bg-gray-50 p-6 border border-gray-100 rounded-sm space-y-4">
+            <div className="flex items-center text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">
+              <ShoppingCart size={14} className="mr-2" /> Варианты покупки
             </div>
-          )}
+
+            <div className="space-y-3">
+              {/* Litres button */}
+              {hasLitresOption && (
+                <a
+                  href={book.litresUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between w-full px-4 py-3 bg-white border border-gray-200 rounded-sm hover:border-gray-400 hover:bg-gray-50 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <ExternalLink size={18} className="text-gray-400 group-hover:text-gray-700" />
+                    <div>
+                      <span className="font-bold text-gray-900 text-sm">Купить на Литрес</span>
+                      <span className="block text-xs text-gray-500">Электронная и аудиокнига</span>
+                    </div>
+                  </div>
+                  <ArrowLeft size={16} className="rotate-180 text-gray-400 group-hover:text-gray-700" />
+                </a>
+              )}
+
+              {/* WhatsApp button */}
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between w-full px-4 py-3 bg-gray-900 text-white rounded-sm hover:bg-black transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <MessageCircle size={18} className="shrink-0" />
+                  <div className="text-left">
+                    <span className="font-bold text-sm block">Купить через WhatsApp</span>
+                    <span className="text-xs text-gray-300">Напишите нам</span>
+                  </div>
+                </div>
+                {hasPdfOption && (
+                  <span className="font-bold text-lg whitespace-nowrap ml-3">
+                    {formatPrice(book.pdfPrice!, book.pdfCurrency || 'KZT')}
+                  </span>
+                )}
+              </a>
+            </div>
+          </div>
 
           {/* Book Preview */}
           <BookPreview bookId={book._id} />
@@ -144,16 +145,6 @@ const BookDetail: React.FC = () => {
           )}
         </div>
       </div>
-
-      {/* Checkout Modal */}
-      <PdfCheckoutModal
-        bookId={book._id}
-        bookTitle={book.title}
-        pdfPrice={book.pdfPrice}
-        pdfCurrency={book.pdfCurrency}
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-      />
     </div>
   );
 };

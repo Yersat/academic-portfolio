@@ -9,7 +9,9 @@ const AdminDashboard: React.FC = () => {
   const books = useQuery(api.books.listAll);
   const media = useQuery(api.profile.listAllMedia);
   const research = useQuery(api.profile.listAllResearch);
-  const orders = useQuery(api.orders.listOrders);
+  const orders = useQuery(api.orders.listOrders, {
+    sessionToken: localStorage.getItem('admin_session_token') || '',
+  });
   const coAuthors = useQuery(api.coAuthors.listAll);
   const gallery = useQuery(api.gallery.listAll);
 

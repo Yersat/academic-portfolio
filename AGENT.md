@@ -74,3 +74,10 @@ Complete backend migration from a self-hosted Express + Prisma + SQLite stack to
 - Moved all content (profile, media, research) to Convex tables for full admin editability
 - PDF downloads use signed URL redirect pattern (handles files > 20MB)
 - HashRouter URLs preserved in Robokassa redirect callbacks (/#/payment/success)
+
+## 2026-11-02: Robokassa removed, WhatsApp purchases, YouTube fix
+
+- **Purchases**: Robokassa refused service, so the checkout, payment pages, callbacks, automatic email and footer card logos were removed. The book page now links to WhatsApp.
+- **Kept**: `orders` and `orderEvents` data and the `/download` route, for past orders.
+- **Security**: `orders.listOrders` now requires an admin session.
+- **Videos**: Saved values can be full YouTube links; `utils/youtube.ts` extracts the video ID.

@@ -3,6 +3,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { Plus, Search, Edit3, Trash2, X, FileX, Video } from 'lucide-react';
+import { getYouTubeId } from '../../utils/youtube';
 
 interface VideoFormData {
   title: string;
@@ -159,9 +160,9 @@ const AdminVideos: React.FC = () => {
             {filteredItems.map((item) => (
               <tr key={item._id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-6 py-4">
-                  {item.videoUrl ? (
+                  {getYouTubeId(item.videoUrl) ? (
                     <img
-                      src={`https://img.youtube.com/vi/${item.videoUrl}/hqdefault.jpg`}
+                      src={`https://img.youtube.com/vi/${getYouTubeId(item.videoUrl)}/hqdefault.jpg`}
                       className="w-24 h-16 object-cover rounded shadow-sm"
                       alt=""
                     />
@@ -295,18 +296,18 @@ const AdminVideos: React.FC = () => {
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">YouTube Video ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Ссылка на YouTube или ID видео</label>
                   <input
                     type="text"
                     value={formData.videoUrl}
                     onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none"
-                    placeholder="например: dQw4w9WgXcQ"
+                    placeholder="например: https://youtu.be/dQw4w9WgXcQ"
                   />
-                  {formData.videoUrl && (
+                  {getYouTubeId(formData.videoUrl) && (
                     <div className="mt-2">
                       <img
-                        src={`https://img.youtube.com/vi/${formData.videoUrl}/hqdefault.jpg`}
+                        src={`https://img.youtube.com/vi/${getYouTubeId(formData.videoUrl)}/hqdefault.jpg`}
                         className="w-40 h-auto rounded shadow-sm"
                         alt="Превью"
                       />

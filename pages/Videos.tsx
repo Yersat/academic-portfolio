@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { ExternalLink } from 'lucide-react';
+import { getYouTubeId } from '../utils/youtube';
 
 const Videos: React.FC = () => {
   const media = useQuery(api.profile.listMedia);
@@ -69,6 +70,7 @@ const Videos: React.FC = () => {
       <div className="space-y-24">
         {filteredMedia.map(item => {
           const itemYear = new Date(item.date).getFullYear();
+          const videoId = getYouTubeId(item.videoUrl);
           return (
             <div key={item._id} className="space-y-8 pb-16 border-b border-gray-200 last:border-0">
               <div className="space-y-4">
@@ -86,11 +88,11 @@ const Videos: React.FC = () => {
               </div>
 
               {/* YouTube Embed */}
-              {item.videoUrl && (
+              {videoId && (
                 <div className="relative aspect-video w-full bg-black shadow-lg">
                   <iframe
                     className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${item.videoUrl}`}
+                    src={`https://www.youtube.com/embed/${videoId}`}
                     title={item.title}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -100,9 +102,9 @@ const Videos: React.FC = () => {
               )}
 
               <div className="flex items-center gap-6">
-                {item.videoUrl && (
+                {videoId && (
                   <a
-                    href={`https://youtube.com/watch?v=${item.videoUrl}`}
+                    href={`https://youtube.com/watch?v=${videoId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-black transition-colors"

@@ -3,6 +3,7 @@ import React from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { ExternalLink } from 'lucide-react';
+import { getYouTubeId } from '../utils/youtube';
 
 const Media: React.FC = () => {
   const media = useQuery(api.profile.listMedia);
@@ -38,11 +39,11 @@ const Media: React.FC = () => {
             </div>
 
             {/* YouTube Embed */}
-            {item.videoUrl && (
+            {getYouTubeId(item.videoUrl) && (
               <div className="relative aspect-video w-full bg-black shadow-lg">
                 <iframe
                   className="absolute inset-0 w-full h-full"
-                  src={`https://www.youtube.com/embed/${item.videoUrl}`}
+                  src={`https://www.youtube.com/embed/${getYouTubeId(item.videoUrl)}`}
                   title={item.title}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -55,9 +56,9 @@ const Media: React.FC = () => {
                <button className="flex items-center text-xs font-bold uppercase tracking-widest text-black border-b border-black pb-1">
                  Полная расшифровка
                </button>
-               {item.videoUrl && (
+               {getYouTubeId(item.videoUrl) && (
                  <a
-                  href={`https://youtube.com/watch?v=${item.videoUrl}`}
+                  href={`https://youtube.com/watch?v=${getYouTubeId(item.videoUrl)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-black transition-colors"

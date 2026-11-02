@@ -3,8 +3,7 @@
 ## Tech Stack
 - **Frontend**: React 19, TypeScript, Vite, React Router (HashRouter), Tailwind CSS (CDN)
 - **Backend**: Convex (queries, mutations, actions, HTTP actions)
-- **Payment**: Robokassa (MD5 signatures, server-to-server callbacks)
-- **Email**: Nodemailer via Convex Node actions
+- **Purchases**: No online payment. The book page links to WhatsApp (`wa.me`), number set in `pages/BookDetail.tsx`
 - **Deployment**: Netlify (frontend), Convex Cloud (backend)
 
 ## Project Structure
@@ -13,11 +12,9 @@
 ├── convex/             # Convex backend functions
 │   ├── schema.ts       # Database schema
 │   ├── books.ts        # Book queries
-│   ├── orders.ts       # Order mutations & queries
-│   ├── checkout.ts     # Robokassa payment initiation
-│   ├── httpHandlers.ts # HTTP actions (Robokassa callbacks, PDF download)
+│   ├── orders.ts       # Past order records (admin list, download checks)
+│   ├── httpHandlers.ts # HTTP action (download links from past orders)
 │   ├── http.ts         # HTTP router
-│   ├── email.ts        # Email sending (Nodemailer)
 │   ├── auth.ts         # Admin authentication
 │   ├── admin.ts        # Admin CRUD mutations
 │   ├── profile.ts      # Profile, media, research functions
@@ -32,14 +29,14 @@
 ## Convex Patterns
 - **Queries** (`query`): Read-only data fetching. Used in frontend via `useQuery()`.
 - **Mutations** (`mutation`): Write operations. Used via `useMutation()`.
-- **Actions** (`action`): For external API calls (Robokassa URL generation, email). Used via `useAction()`.
+- **Actions** (`action`): For external API calls. Used via `useAction()`.
 - **Internal functions** (`internalQuery`, `internalMutation`, `internalAction`): Called only from other Convex functions, not from the client.
-- **HTTP actions** (`httpAction`): Public HTTP endpoints for Robokassa callbacks and PDF downloads.
-- Use `"use node"` directive at top of files needing Node.js crypto or Nodemailer.
+- **HTTP actions** (`httpAction`): Public HTTP endpoints, currently PDF downloads for past orders.
+- Use `"use node"` directive at top of files needing Node.js APIs.
 
 ## Naming Conventions
-- **Functions**: camelCase (`listPublished`, `createBook`, `initiatePdfCheckout`)
-- **Components**: PascalCase (`BookDetail`, `AdminBooks`, `PdfCheckoutModal`)
+- **Functions**: camelCase (`listPublished`, `createBook`)
+- **Components**: PascalCase (`BookDetail`, `AdminBooks`)
 - **Files**: camelCase for Convex (`books.ts`), PascalCase for components (`BookDetail.tsx`)
 - **Tables**: camelCase plural (`books`, `orders`, `mediaItems`, `researchPapers`)
 
@@ -55,22 +52,12 @@
 - Convex queries auto-update in real-time when data changes
 - Book IDs use Convex `Id<"books">` type, not plain strings
 
-## Robokassa Payment Flow
-1. Frontend calls `initiatePdfCheckout` action with bookId + email
-2. Action creates order, generates Robokassa payment URL with MD5 signature
-3. Frontend redirects user to Robokassa
-4. Robokassa calls back to `https://<deployment>.convex.site/robokassa/result`
-5. HTTP action verifies signature, marks order PAID, generates download token, sends email
-6. User redirected to `/#/payment/success` (HashRouter format)
+## Book Purchases
+Robokassa was removed (the provider refused service). The "Купить через WhatsApp" button on the book page opens a chat with a prefilled message; payment and delivery are arranged manually. The `orders` tables and `/download` route remain only for records and links from past orders.
 
 ## Environment Variables
 ### Convex Dashboard
-- `ROBOKASSA_MERCHANT_LOGIN`, `ROBOKASSA_PASSWORD1`, `ROBOKASSA_PASSWORD2`
-- `ROBOKASSA_TEST_MODE` (1 for test, 0 for production)
-- `ROBOKASSA_BASE_URL`
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
 - `ADMIN_PASSWORD`
-- `FRONTEND_ORIGIN` (e.g., https://your-site.netlify.app)
 
 ### Netlify / Local .env
 - `VITE_CONVEX_URL` - Convex deployment URL

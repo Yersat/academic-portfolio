@@ -12,8 +12,6 @@ import ArticleDetail from './pages/ArticleDetail';
 import CoAuthors from './pages/CoAuthors';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
-import PaymentSuccess from './pages/PaymentSuccess';
-import PaymentFail from './pages/PaymentFail';
 import AdminLayout from './components/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminBooks from './pages/admin/AdminBooks';
@@ -63,10 +61,6 @@ const App: React.FC = () => {
         {/* Redirects for old URLs */}
         <Route path="/media" element={<Navigate to="/videos" replace />} />
         <Route path="/research" element={<Navigate to="/articles" replace />} />
-
-        {/* Payment result pages */}
-        <Route path="/payment/success" element={<PaymentSuccess />} />
-        <Route path="/payment/fail" element={<PaymentFail />} />
       </Route>
 
       {/* Admin Routes */}

@@ -38,3 +38,6 @@ server/uploads/pdfs/*
 server/.env
 !.env.example
 !server/.env.example
+
+# Private client files (not for the repository)
+bilig/

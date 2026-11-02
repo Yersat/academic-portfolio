@@ -11,10 +11,7 @@
 import type * as admin from "../admin.js";
 import type * as auth from "../auth.js";
 import type * as books from "../books.js";
-import type * as checkout from "../checkout.js";
 import type * as coAuthors from "../coAuthors.js";
-import type * as crypto from "../crypto.js";
-import type * as email from "../email.js";
 import type * as gallery from "../gallery.js";
 import type * as http from "../http.js";
 import type * as httpHandlers from "../httpHandlers.js";
@@ -33,10 +30,7 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   auth: typeof auth;
   books: typeof books;
-  checkout: typeof checkout;
   coAuthors: typeof coAuthors;
-  crypto: typeof crypto;
-  email: typeof email;
   gallery: typeof gallery;
   http: typeof http;
   httpHandlers: typeof httpHandlers;
