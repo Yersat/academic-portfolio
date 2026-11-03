@@ -121,54 +121,68 @@ const AdminArticles: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const blocksToSave = contentBlocks.map((block) => {
-      const b: any = { type: block.type };
-      if (block.text !== undefined) b.text = block.text;
-      if (block.imageStorageId !== undefined) b.imageStorageId = block.imageStorageId;
-      if (block.imageCaption !== undefined) b.imageCaption = block.imageCaption;
-      if (block.level !== undefined) b.level = block.level;
-      return b;
-    });
+    try {
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
 
-    if (editingId) {
-      await updateResearch({
-        sessionToken: getSessionToken(),
-        id: editingId,
-        title: formData.title,
-        year: formData.year,
-        journal: formData.journal || undefined,
-        authors: formData.authors,
-        abstract: formData.abstract,
-        pdfUrl: formData.pdfUrl || undefined,
-        fileStorageId: fileStorageId || undefined,
-        contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
-        status: formData.status,
-        category: (formData.category as any) || undefined,
-        pages: formData.pages || undefined,
-        issueNumber: formData.issueNumber || undefined,
+      const blocksToSave = contentBlocks.map((block) => {
+        const b: any = { type: block.type };
+        if (block.text !== undefined) b.text = block.text;
+        if (block.imageStorageId !== undefined) b.imageStorageId = block.imageStorageId;
+        if (block.imageCaption !== undefined) b.imageCaption = block.imageCaption;
+        if (block.level !== undefined) b.level = block.level;
+        return b;
       });
-    } else {
-      await createResearch({
-        sessionToken: getSessionToken(),
-        title: formData.title,
-        year: formData.year,
-        journal: formData.journal || undefined,
-        authors: formData.authors,
-        abstract: formData.abstract,
-        pdfUrl: formData.pdfUrl || undefined,
-        fileStorageId: fileStorageId || undefined,
-        contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
-        status: formData.status,
-        category: (formData.category as any) || undefined,
-        pages: formData.pages || undefined,
-        issueNumber: formData.issueNumber || undefined,
-      });
+
+      if (editingId) {
+        await updateResearch({
+          sessionToken: token,
+          id: editingId,
+          title: formData.title,
+          year: formData.year,
+          journal: formData.journal || undefined,
+          authors: formData.authors,
+          abstract: formData.abstract,
+          pdfUrl: formData.pdfUrl || undefined,
+          fileStorageId: fileStorageId || undefined,
+          contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
+          status: formData.status,
+          category: (formData.category as any) || undefined,
+          pages: formData.pages || undefined,
+          issueNumber: formData.issueNumber || undefined,
+        });
+      } else {
+        await createResearch({
+          sessionToken: token,
+          title: formData.title,
+          year: formData.year,
+          journal: formData.journal || undefined,
+          authors: formData.authors,
+          abstract: formData.abstract,
+          pdfUrl: formData.pdfUrl || undefined,
+          fileStorageId: fileStorageId || undefined,
+          contentBlocks: blocksToSave.length > 0 ? blocksToSave : undefined,
+          status: formData.status,
+          category: (formData.category as any) || undefined,
+          pages: formData.pages || undefined,
+          issueNumber: formData.issueNumber || undefined,
+        });
+      }
+
+      setIsModalOpen(false);
+      setEditingId(null);
+      setFormData(emptyFormData);
+      setContentBlocks([]);
+    } catch (err: any) {
+      console.error('Save failed:', err);
+      alert(`Не удалось сохранить: ${err.message || 'Попробуйте ещё раз.'}`);
     }
-
-    setIsModalOpen(false);
-    setEditingId(null);
-    setFormData(emptyFormData);
-    setContentBlocks([]);
   };
 
   const addBlock = () => {

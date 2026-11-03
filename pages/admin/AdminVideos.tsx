@@ -37,6 +37,7 @@ const AdminVideos: React.FC = () => {
   const createMedia = useMutation(api.profile.createMedia);
   const updateMedia = useMutation(api.profile.updateMedia);
   const deleteMedia = useMutation(api.profile.deleteMedia);
+  const checkSession = useMutation(api.auth.checkSession);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<Id<"mediaItems"> | null>(null);
@@ -78,39 +79,53 @@ const AdminVideos: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const tagsArray = formData.tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
+    try {
+      const token = getSessionToken();
+      const { valid } = await checkSession({ sessionToken: token });
+      if (!valid) {
+        alert('Сессия истекла. Пожалуйста, войдите заново.');
+        localStorage.removeItem('admin_session_token');
+        window.location.hash = '#/admin/login';
+        return;
+      }
 
-    if (editingId) {
-      await updateMedia({
-        sessionToken: getSessionToken(),
-        id: editingId,
-        title: formData.title,
-        date: formData.date,
-        type: formData.type,
-        description: formData.description,
-        videoUrl: formData.videoUrl || undefined,
-        tags: tagsArray,
-        status: formData.status,
-      });
-    } else {
-      await createMedia({
-        sessionToken: getSessionToken(),
-        title: formData.title,
-        date: formData.date,
-        type: formData.type,
-        description: formData.description,
-        videoUrl: formData.videoUrl || undefined,
-        tags: tagsArray,
-        status: formData.status,
-      });
+      const tagsArray = formData.tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+
+      if (editingId) {
+        await updateMedia({
+          sessionToken: token,
+          id: editingId,
+          title: formData.title,
+          date: formData.date,
+          type: formData.type,
+          description: formData.description,
+          videoUrl: formData.videoUrl || undefined,
+          tags: tagsArray,
+          status: formData.status,
+        });
+      } else {
+        await createMedia({
+          sessionToken: token,
+          title: formData.title,
+          date: formData.date,
+          type: formData.type,
+          description: formData.description,
+          videoUrl: formData.videoUrl || undefined,
+          tags: tagsArray,
+          status: formData.status,
+        });
+      }
+
+      setIsModalOpen(false);
+      setEditingId(null);
+      setFormData(emptyFormData);
+    } catch (err: any) {
+      console.error('Save failed:', err);
+      alert(`Не удалось сохранить: ${err.message || 'Попробуйте ещё раз.'}`);
     }
-
-    setIsModalOpen(false);
-    setEditingId(null);
-    setFormData(emptyFormData);
   };
 
   const filteredItems = (mediaItems || []).filter((item) =>

@@ -28,7 +28,7 @@ const BookDetail: React.FC = () => {
 
   const hasPdfOption = book.pdfPrice && book.pdfPrice > 0;
   const hasLitresOption = book.litresUrl && book.litresUrl.trim() !== '';
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Здравствуйте! Хочу купить книгу «${book.title}».`)}`;
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Здравствуйте! Хочу купить электронную версию (PDF) книги «${book.title}».`)}`;
 
   return (
     <div className="space-y-12">
@@ -97,8 +97,8 @@ const BookDetail: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <MessageCircle size={18} className="shrink-0" />
                   <div className="text-left">
-                    <span className="font-bold text-sm block">Купить через WhatsApp</span>
-                    <span className="text-xs text-gray-300">Напишите нам</span>
+                    <span className="font-bold text-sm block">Купить PDF</span>
+                    <span className="text-xs text-gray-300">Электронная книга, через WhatsApp</span>
                   </div>
                 </div>
                 {hasPdfOption && (

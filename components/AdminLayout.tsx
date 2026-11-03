@@ -1,6 +1,8 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useMutation } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { LayoutDashboard, Book, BookOpen, Video, FileEdit, Settings, LogOut, User, FileText, Users, Image, UserCircle } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -11,11 +13,24 @@ interface AdminLayoutProps {
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const checkSession = useMutation(api.auth.checkSession);
 
   const handleLogout = () => {
     onLogout();
     navigate('/');
   };
+
+  // The server expires sessions after 24h; send the admin back to login instead of letting saves fail.
+  useEffect(() => {
+    checkSession({ sessionToken: localStorage.getItem('admin_session_token') || '' })
+      .then(({ valid }) => {
+        if (!valid) {
+          onLogout();
+          navigate('/admin/login', { replace: true });
+        }
+      })
+      .catch(() => {});
+  }, [location.pathname]);
 
   const navItems = [
     { name: 'Панель', path: '/admin/dashboard', icon: LayoutDashboard },
